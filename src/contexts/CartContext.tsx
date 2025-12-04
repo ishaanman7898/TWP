@@ -66,19 +66,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
         const finalCartUrl = `https://portal.veinternational.org/buybuttons/${companyCode}/cart/`;
 
-        alert(
-            `Adding ${cart.length} items to your VEI cart...\nTiny windows will flash and auto-close (SUPER FAST)`
-        );
-
         setIsCheckingOut(true);
-        let addedCount = 0;
 
-        // Process each item one by one with TINY popup
+        // Open all items in invisible popups IMMEDIATELY (parallel processing)
+        const popups: (Window | null)[] = [];
+
         for (let i = 0; i < cart.length; i++) {
             const item = cart[i];
             const url = `${item.link}?nocache=${Date.now() + i}`;
 
-            // Completely invisible popup - pushed way off screen
+            // Completely invisible popup
             const popup = window.open(
                 url,
                 `vei_add_${i}`,
@@ -91,41 +88,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 return;
             }
 
-            // Auto-close when VEI finishes adding (detects success page)
-            const checkInterval = setInterval(() => {
-                try {
-                    if (
-                        popup.closed ||
-                        popup.location.href.includes("success") ||
-                        popup.location.href.includes("/cart") ||
-                        popup.document?.body?.innerText?.toLowerCase().includes("added")
-                    ) {
-                        clearInterval(checkInterval);
-                        popup.close();
-                        addedCount++;
-
-                        // When ALL items are done → open final cart in new tab
-                        if (addedCount === cart.length) {
-                            setTimeout(() => {
-                                window.open(finalCartUrl, "_blank");
-                            }, 200);
-                        }
-                    }
-                } catch (e) {
-                    // Cross-origin = normal, just keep waiting
-                }
-            }, 100); // Check every 0.1 sec (SUPER FAST)
-
-            // Fallback: force close after 3 sec max
-            setTimeout(() => {
-                if (!popup.closed) popup.close();
-            }, 3000);
+            popups.push(popup);
         }
 
-        // Clear your local cart
-        setCart([]);
-        localStorage.removeItem(STORAGE_KEY);
-        setIsCheckingOut(false);
+        // Wait a short time for items to be added, then close all popups and open cart
+        setTimeout(() => {
+            // Close all popups
+            popups.forEach(popup => {
+                if (popup && !popup.closed) {
+                    popup.close();
+                }
+            });
+
+            // Open final cart in NEW TAB
+            window.open(finalCartUrl, "_blank");
+
+            // Clear local cart
+            setCart([]);
+            localStorage.removeItem(STORAGE_KEY);
+            setIsCheckingOut(false);
+        }, 2000); // Reduced from 3000ms to 2000ms for speed
     };
 
     return (

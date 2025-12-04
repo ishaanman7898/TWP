@@ -16,6 +16,14 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import ProductDetail from "./pages/ProductDetail";
 import CartTest from "./pages/CartTest";
+import Featured from "./pages/Featured";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import WaterBottles from "./pages/WaterBottles";
+import Electrolytes from "./pages/Electrolytes";
+import Supplements from "./pages/Supplements";
+import Accessories from "./pages/Accessories";
+import Bundles from "./pages/Bundles";
 
 const queryClient = new QueryClient();
 
@@ -28,13 +36,21 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/featured" element={<Featured />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/shop/water-bottles" element={<WaterBottles />} />
+            <Route path="/shop/electrolytes" element={<Electrolytes />} />
+            <Route path="/shop/supplements" element={<Supplements />} />
+            <Route path="/shop/accessories" element={<Accessories />} />
+            <Route path="/shop/bundles" element={<Bundles />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart-test" element={<CartTest />} />
             <Route path="/about" element={<About />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -10,10 +10,11 @@ const navLinks = [
     href: "/shop",
     hasDropdown: true,
     dropdownItems: [
-      { label: "Wellness", href: "/shop?category=Wellness" },
-      { label: "Water Bottles", href: "/shop?category=Water+Bottles" },
-      { label: "Bundles", href: "/shop?category=Bundles" },
-      { label: "Accessories", href: "/shop?category=Accessories" },
+      { label: "Water Bottles", href: "/shop/water-bottles" },
+      { label: "Electrolytes", href: "/shop/electrolytes" },
+      { label: "Supplements", href: "/shop/supplements" },
+      { label: "Accessories", href: "/shop/accessories" },
+      { label: "Bundles", href: "/shop/bundles" },
       { label: "All Products", href: "/shop" },
     ]
   },
@@ -21,7 +22,6 @@ const navLinks = [
   { label: "About", href: "#about" },
   { label: "Stories", href: "#stories" },
   { label: "Newsletter", href: "#newsletter" },
-  { label: "Team Login", href: "/login" },
 ];
 
 export function Navbar() {
@@ -48,7 +48,7 @@ export function Navbar() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 group">
-              <img src="/Thrive.png" alt="Thrive" className="h-10 w-auto object-contain drop-shadow" />
+              <img src="/Thrive.png" alt="Thrive" className="h-16 w-auto object-contain drop-shadow" />
             </a>
 
             {/* Desktop Navigation */}
@@ -96,8 +96,11 @@ export function Navbar() {
             {/* Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3">
 
-              <Button variant="nav-cta" className="rounded-full" asChild>
-                <Link to="/shop">Explore →</Link>
+              <Button variant="nav-cta" className="rounded-full group" asChild>
+                <Link to="/featured">
+                  <span>Explore</span>
+                  <span className="inline-block ml-1 group-hover:animate-arrow-slide">→</span>
+                </Link>
               </Button>
             </div>
 
@@ -128,8 +131,11 @@ export function Navbar() {
                 </a>
               ))}
               <hr className="border-border my-2" />
-              <Button variant="nav-cta" className="w-full rounded-full" asChild>
-                <Link to="/shop">Explore →</Link>
+              <Button variant="nav-cta" className="w-full rounded-full group" asChild>
+                <Link to="/featured">
+                  <span>Explore</span>
+                  <span className="inline-block ml-1 group-hover:animate-arrow-slide">→</span>
+                </Link>
               </Button>
             </div>
           </div>

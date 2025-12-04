@@ -13,19 +13,25 @@ import { useCart } from "@/contexts/CartContext";
 
 type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
-export default function Shop() {
+interface ShopProps {
+  category?: string;
+}
+
+export default function Shop({ category: categoryProp }: ShopProps = {}) {
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
-  const [selectedCategory, setSelectedCategory] = useState(categoryParam || "All");
+  const [selectedCategory, setSelectedCategory] = useState(categoryProp || categoryParam || "All");
 
-  // Update selected category when URL param changes
+  // Update selected category when URL param or prop changes
   useEffect(() => {
-    if (categoryParam) {
+    if (categoryProp) {
+      setSelectedCategory(categoryProp);
+    } else if (categoryParam) {
       setSelectedCategory(categoryParam);
     } else {
       setSelectedCategory("All");
     }
-  }, [categoryParam]);
+  }, [categoryParam, categoryProp]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
@@ -73,8 +79,11 @@ export default function Shop() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 pb-12 bg-gradient-to-b from-primary/10 to-background">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
+      <section className="pt-40 pb-16 bg-gradient-to-b from-primary/10 to-background relative overflow-hidden">
+        {/* Matrix Dots Background */}
+        <div className="absolute inset-0 matrix-dots opacity-20"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
             Shop <span className="text-gradient">Thrive</span>
           </h1>
@@ -168,9 +177,9 @@ export default function Shop() {
 
 function ProductCard({ variants, index }: { variants: Product[]; index: number }) {
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
+  const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
 
-  // Update selected variant if variants prop changes (e.g. filtering)
   useEffect(() => {
     setSelectedVariant(variants[0]);
   }, [variants]);
@@ -211,12 +220,15 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
     text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 
   const handleAddToCart = () => {
-    addToCart({
-      name: product.name,
-      link: product.buyLink,
-      price: product.price,
-      image: product.image,
-    });
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        name: product.name,
+        link: product.buyLink,
+        price: product.price,
+        image: product.image,
+      });
+    }
+    setQuantity(1);
   };
 
   return (
@@ -230,7 +242,7 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
       style={{ animationDelay: `${index * 50}ms` }}
     >
       {/* Product Image */}
-      <div className={cn("relative h-48 flex items-center justify-center p-6", getCategoryBg(product.category))}>
+      <div className={cn("relative h-40 sm:h-48 flex items-center justify-center p-4 sm:p-6", getCategoryBg(product.category))}>
         <Link to={`/product/${slugify(product.groupName)}`} className="absolute inset-0" aria-label={`View ${product.groupName}`} />
         {product.image ? (
           <img
@@ -245,18 +257,18 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
           />
         ) : null}
 
-        {/* Fallback Placeholder (hidden if image loads) */}
+        {/* Fallback Placeholder */}
         <div className={cn(
           "absolute inset-0 flex items-center justify-center",
           product.image ? "hidden" : ""
         )}>
-          <div className="text-6xl font-display font-bold text-foreground/10">
+          <div className="text-4xl sm:text-6xl font-display font-bold text-foreground/10">
             {product.groupName.charAt(0)}
           </div>
         </div>
 
         <span className={cn(
-          "absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium",
+          "absolute top-2 sm:top-3 left-2 sm:left-3 px-2 py-1 rounded-full text-xs font-medium",
           getCategoryColor(product.category)
         )}>
           {product.category}
@@ -264,25 +276,25 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
       </div>
 
       {/* Product Info */}
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow">
         <p className="text-xs text-muted-foreground mb-1">SKU: {product.sku}</p>
-        <h3 className="font-display text-lg font-bold text-foreground mb-2 line-clamp-2">
+        <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2">
           <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
             {product.groupName}
           </Link>
         </h3>
 
-        {/* Variant Swatches (aligned height) */}
+        {/* Variant Swatches */}
         {variants.length > 1 && (
-          <div className="flex flex-wrap gap-2 mb-4 min-h-[32px] items-center">
+          <div className="flex flex-wrap gap-2 mb-3 sm:mb-4 min-h-[28px] sm:min-h-[32px] items-center">
             {variants.map((variant) => (
               <button
                 key={variant.id}
                 onClick={() => setSelectedVariant(variant)}
                 className={cn(
-                  "w-6 h-6 rounded-full border border-border transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50",
+                  "w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-border transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50",
                   selectedVariant.id === variant.id && "ring-2 ring-primary scale-110",
-                  variant.hexColor === "#FFFFFF" && "bg-white", // Ensure white is visible
+                  variant.hexColor === "#FFFFFF" && "bg-white",
                 )}
                 style={{ backgroundColor: variant.hexColor }}
                 title={variant.color}
@@ -298,32 +310,37 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-auto gap-2">
-          <span className="text-[22px] leading-none font-display font-bold text-foreground">
-            ${product.price.toFixed(2)}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full h-8 w-8 p-0"
-              onClick={handleAddToCart}
-              title="Add to Cart"
-            >
-              <ShoppingCart className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              className="rounded-full"
-              asChild
-            >
-              <a href={product.buyLink} target="_blank" rel="noopener noreferrer">
-                <ShoppingBag className="w-4 h-4 mr-1" />
-                Buy
-              </a>
-            </Button>
+        <div className="mt-auto space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-lg sm:text-xl md:text-2xl leading-none font-display font-bold text-foreground">
+              ${product.price.toFixed(2)}
+            </span>
+            {/* Quantity Selector */}
+            <div className="flex items-center gap-2 bg-muted rounded-full p-1">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-background hover:bg-foreground/10 flex items-center justify-center text-sm font-bold"
+              >
+                −
+              </button>
+              <span className="w-6 sm:w-8 text-center font-medium text-sm">{quantity}</span>
+              <button
+                onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-background hover:bg-foreground/10 flex items-center justify-center text-sm font-bold"
+              >
+                +
+              </button>
+            </div>
           </div>
+          <Button
+            variant="default"
+            size="sm"
+            className="w-full rounded-full text-sm sm:text-base"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Add to Cart
+          </Button>
         </div>
       </div>
     </div>
