@@ -24,6 +24,7 @@ import Electrolytes from "./pages/Electrolytes";
 import Supplements from "./pages/Supplements";
 import Accessories from "./pages/Accessories";
 import Bundles from "./pages/Bundles";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/shop/bundles" element={<Bundles />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart-test" element={<CartTest />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/about" element={<About />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/login" element={<Login />} />

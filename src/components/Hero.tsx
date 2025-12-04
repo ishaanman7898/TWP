@@ -23,29 +23,39 @@ export function Hero() {
             <source src="/HeroVideo.mp4" type="video/mp4" />
           </video>
         </div>
-        {/* Lighter overlay for better video visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-background/20 to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+        {/* Darker overlay for text readability */}
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Content */}
+      {/* Content - Centered like reference */}
       <div className="container mx-auto px-4 lg:px-8 relative z-20">
-        <div className="max-w-4xl mx-auto text-center lg:text-left lg:mx-0">
-          {/* Main Headline - Responsive sizing */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 md:mb-6 animate-fade-in-up delay-100 leading-tight">
-            <span className="text-foreground">WELLNESS</span>
-            <br />
-            <span className="text-foreground">THAT </span>
-            <span className="text-gradient glow-text">WORKS</span>
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Big THRIVE Text */}
+          <h1 className="font-display text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem] font-black mb-2 md:mb-4 animate-fade-in-up tracking-tight leading-none">
+            <span className="text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">THRIVE</span>
           </h1>
 
-          {/* Subheadline - Responsive sizing */}
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto lg:mx-0 animate-fade-in-up delay-200 leading-relaxed">
+          {/* WELLNESS THAT WORKS with oval around WORKS */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 animate-fade-in-up delay-100">
+            <span className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white tracking-wide">
+              WELLNESS THAT
+            </span>
+            <span className="relative inline-flex items-center justify-center">
+              <span className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-primary tracking-wide px-4 sm:px-6 py-1">
+                WORKS
+              </span>
+              {/* Oval border around WORKS */}
+              <span className="absolute inset-0 border-2 border-primary/70 rounded-full" />
+            </span>
+          </div>
+
+          {/* Subheadline */}
+          <p className="text-base sm:text-lg md:text-xl text-white/80 mt-6 md:mt-8 mb-8 md:mb-10 max-w-2xl mx-auto animate-fade-in-up delay-200 leading-relaxed">
             Unlock your peak performance with premium supplements designed for those who demand more from life.
           </p>
 
-          {/* CTA Buttons - Stacked on mobile */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 animate-fade-in-up delay-300 justify-center lg:justify-start">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 animate-fade-in-up delay-300 justify-center">
             <Button variant="hero" size="default" className="rounded-full w-full sm:w-auto text-sm sm:text-base" asChild>
               <a href="/shop">
                 Shop Now

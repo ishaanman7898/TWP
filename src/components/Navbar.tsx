@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
 
 const navLinks = [
   {
@@ -28,6 +29,8 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { cart } = useCart();
+  const totalItems = cart.length;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);
@@ -40,15 +43,17 @@ export function Navbar() {
       {/* Main Navbar */}
       <nav
         className={cn(
-          "fixed top-0 z-50 w-full transition-colors duration-300 py-6",
-          isScrolled ? "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60" : "bg-transparent"
+          "fixed top-0 z-50 w-full transition-all duration-300 py-4",
+          isScrolled 
+            ? "bg-black/90 backdrop-blur-xl supports-[backdrop-filter]:bg-black/80" 
+            : "bg-transparent"
         )}
       >
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+            {/* Logo - Bigger */}
             <a href="/" className="flex items-center gap-3 group">
-              <img src="/Thrive.png" alt="Thrive" className="h-16 w-auto object-contain drop-shadow" />
+              <img src="/Thrive.png" alt="Thrive" className="h-20 md:h-24 w-auto object-contain drop-shadow" />
             </a>
 
             {/* Desktop Navigation */}
@@ -93,13 +98,17 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* Right Side Actions */}
+            {/* Right Side Actions - Cart Button */}
             <div className="hidden lg:flex items-center gap-3">
-
-              <Button variant="nav-cta" className="rounded-full group" asChild>
-                <Link to="/featured">
-                  <span>Explore</span>
-                  <span className="inline-block ml-1 group-hover:animate-arrow-slide">→</span>
+              <Button variant="nav-cta" className="rounded-full group relative" asChild>
+                <Link to="/cart">
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="ml-2">Cart</span>
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
               </Button>
             </div>
@@ -131,10 +140,15 @@ export function Navbar() {
                 </a>
               ))}
               <hr className="border-border my-2" />
-              <Button variant="nav-cta" className="w-full rounded-full group" asChild>
-                <Link to="/featured">
-                  <span>Explore</span>
-                  <span className="inline-block ml-1 group-hover:animate-arrow-slide">→</span>
+              <Button variant="nav-cta" className="w-full rounded-full group relative" asChild>
+                <Link to="/cart">
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="ml-2">Cart</span>
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
               </Button>
             </div>
