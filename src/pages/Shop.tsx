@@ -78,8 +78,11 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
     <div className="min-h-screen bg-background">
       <Navbar />
 
+      <div className="relative">
+        <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+
       {/* Hero Section */}
-      <section className="pt-40 pb-16 bg-gradient-to-b from-primary/10 to-background relative overflow-hidden">
+      <section className="pt-48 pb-20 bg-gradient-to-b from-primary/10 to-background relative overflow-hidden">
         {/* Matrix Dots Background */}
         <div className="absolute inset-0 matrix-dots opacity-20"></div>
 
@@ -169,6 +172,8 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
           )}
         </div>
       </section>
+
+      </div>
 
       <Footer />
     </div>
@@ -278,7 +283,7 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
       {/* Product Info */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow">
         <p className="text-xs text-muted-foreground mb-1">SKU: {product.sku}</p>
-        <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2">
+        <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2 tracking-[0.02em]">
           <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
             {product.groupName}
           </Link>

@@ -36,72 +36,70 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-sans">
       <Navbar />
       <Hero />
 
-      {/* Matrix Dots Background for entire page */}
-      <div className="relative">
-        <div className="absolute inset-0 matrix-dots opacity-30"></div>
-
-        {/* Tagline Section */}
-        <section className="py-12 md:py-16 bg-background relative z-10">
-          <div className="container mx-auto px-4 lg:px-8">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center text-foreground max-w-4xl mx-auto leading-tight">
-              We create Innovative products that make wellness simple.
-            </h2>
+      {/* Tagline Section - Navy split layout */}
+      <section id="tagline" className="relative bg-navy-medium py-16 md:py-24">
+        <div className="absolute inset-0 matrix-dots opacity-20" aria-hidden="true" />
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 items-center gap-10">
+            {/* Left: stacked text */}
+            <div className="text-left">
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight space-y-2">
+                <div>WE CREATE</div>
+                <div>INNOVATIVE</div>
+                <div>PRODUCTS THAT</div>
+                <div>MAKE WELLNESS</div>
+                <div><span className="text-glacier">SIMPLE.</span></div>
+              </h2>
+            </div>
+            {/* Right: product card mock */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-navy-medium via-navy-medium/60 to-white/10 p-6 shadow-2xl">
+                <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-navy-medium/40 via-ocean/30 to-white/40 flex items-center justify-center overflow-hidden">
+                  <img src="/placeholder.svg" alt="Peak Protein" className="w-3/4 h-3/4 object-contain drop-shadow" />
+                </div>
+                <div className="text-center mt-6">
+                  <div className="font-display text-3xl sm:text-4xl font-extrabold text-white">PEAK PROTEIN</div>
+                  <div className="font-display text-xl sm:text-2xl font-bold text-white/90">CHOCOLATE</div>
+                  <div className="mt-6 text-white/70 tracking-wider">WELLNESS THAT WORKS.</div>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Section Divider */}
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
         </div>
 
-        {/* Single Scrolling Text Animation */}
-        <section className="py-8 overflow-hidden bg-card border-y border-border relative z-10">
-          <div className="flex animate-scroll-left whitespace-nowrap">
-            <div className="flex items-center gap-8 px-4">
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Elegant</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Beautiful</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Innovative</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Sustainable</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Simple</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Elegant</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Beautiful</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Innovative</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Sustainable</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-            </div>
-            {/* Duplicate for seamless loop */}
-            <div className="flex items-center gap-8 px-4" aria-hidden="true">
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Elegant</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Beautiful</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Innovative</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Sustainable</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Simple</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Elegant</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Beautiful</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Innovative</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-              <span className="font-display text-2xl md:text-3xl font-bold text-foreground">Sustainable</span>
-              <span className="text-2xl md:text-3xl">〰️</span>
-            </div>
+        {/* Wavy Scrolling Text */}
+        <section className="py-8 md:py-10 overflow-hidden bg-navy-medium relative z-10">
+          <div className="flex animate-scroll-right whitespace-nowrap">
+            {Array.from({ length: 2 }).map((_, dup) => (
+              <div className="flex items-center gap-10 px-6" key={dup} aria-hidden={dup === 1}>
+                {[
+                  "Elegant","〰️","Beautiful","〰️","Innovative","〰️","Sustainable","〰️","Elegant","〰️",
+                  "Beautiful","〰️","Innovative","〰️","Sustainable","〰️","Elegant","〰️"
+                ].map((word, i) => (
+                  <span
+                    key={i}
+                    className={
+                      word === "〰️"
+                        ? "text-2xl md:text-3xl text-glacier/60"
+                        : "font-display text-2xl md:text-3xl font-extrabold text-white inline-block animate-wave"
+                    }
+                    style={{ animationDelay: `${(i % 8) * 120}ms` }}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
+            ))}
           </div>
         </section>
 
@@ -110,124 +108,41 @@ const Index = () => {
           <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
         </div>
 
-        {/* The Thrive Factor - Product Carousel Section */}
-        <section className="py-12 md:py-24 bg-background relative overflow-hidden">
+        {/* The Thrive Factor - split layout */}
+        <section className="py-16 md:py-24 bg-navy-medium relative overflow-hidden">
+          <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true" />
           <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            {/* Section Header */}
-            <div className="text-center mb-12 md:mb-16">
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
-                The <span className="text-gradient">Thrive</span> Factor
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Made with a conscience to the world
-              </p>
-            </div>
+            <div className="grid lg:grid-cols-2 items-start gap-12">
+              {/* Left: Heading + list */}
+              <div>
+                <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-3">
+                  THE THRIVE <span className="text-glacier">FACTOR</span>
+                </h2>
+                <p className="font-display text-xl sm:text-2xl font-extrabold text-white/90 tracking-wide mb-10">
+                  MADE WITH A CONSCIENCE TO THE WORLD
+                </p>
 
-            {/* Auto-scrolling Product Carousel */}
-            <div className="mb-16 overflow-hidden">
-              <div className="flex animate-scroll-left whitespace-nowrap py-8">
-                {/* First set of products */}
-                {products.map((product, i) => (
-                  <div key={i} className="inline-block mx-4 w-80 flex-shrink-0">
-                    <div className="bg-card border border-border rounded-2xl p-6 h-full hover:border-primary/50 transition-all hover:shadow-xl hover:-translate-y-1">
-                      <div className="aspect-square bg-muted rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h3 className="font-display text-xl font-bold text-foreground mb-2 whitespace-normal">
-                        {product.name}
-                      </h3>
-                      <p className="text-glacier font-bold text-2xl mb-3">{product.price}</p>
-                      <div className="space-y-2 whitespace-normal">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Premium Materials</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Sustainable Production</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Customizable Options</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Ultimate Convenience</span>
-                        </div>
-                      </div>
+                <div className="divide-y divide-white/20 max-w-xl">
+                  {["MATERIALS","SUSTAINABILITY","CUSTOMIZATION","CONVENIENCE"].map((item) => (
+                    <div key={item} className="flex items-center justify-between py-4 text-white/90">
+                      <span className="font-display text-xl font-bold tracking-wide">{item}</span>
+                      <span className="text-2xl font-bold">+</span>
                     </div>
-                  </div>
-                ))}
-                {/* Duplicate for seamless loop */}
-                {products.map((product, i) => (
-                  <div key={`dup-${i}`} className="inline-block mx-4 w-80 flex-shrink-0" aria-hidden="true">
-                    <div className="bg-card border border-border rounded-2xl p-6 h-full hover:border-primary/50 transition-all hover:shadow-xl hover:-translate-y-1">
-                      <div className="aspect-square bg-muted rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h3 className="font-display text-xl font-bold text-foreground mb-2 whitespace-normal">
-                        {product.name}
-                      </h3>
-                      <p className="text-glacier font-bold text-2xl mb-3">{product.price}</p>
-                      <div className="space-y-2 whitespace-normal">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Premium Materials</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Sustainable Production</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Customizable Options</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-glacier"></div>
-                          <span className="text-sm text-muted-foreground">Ultimate Convenience</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Section Divider */}
-            <div className="container mx-auto px-4 lg:px-8 py-8">
-              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-            </div>
-
-            {/* Details Section */}
-            <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-              <div className="text-center p-6">
-                <h3 className="font-display text-xl font-bold text-foreground mb-2">Materials</h3>
-                <p className="text-muted-foreground">Premium quality materials sourced responsibly from trusted suppliers worldwide</p>
-              </div>
-              <div className="text-center p-6">
-                <h3 className="font-display text-xl font-bold text-foreground mb-2">Sustainability</h3>
-                <p className="text-muted-foreground">Environmentally conscious production process with minimal carbon footprint</p>
-              </div>
-              <div className="text-center p-6">
-                <h3 className="font-display text-xl font-bold text-foreground mb-2">Customization</h3>
-                <p className="text-muted-foreground">Tailored solutions designed for your unique wellness needs and lifestyle</p>
-              </div>
-              <div className="text-center p-6">
-                <h3 className="font-display text-xl font-bold text-foreground mb-2">Convenience</h3>
-                <p className="text-muted-foreground">Simple integration into your daily routine with maximum effectiveness</p>
+              {/* Right: Product card */}
+              <div className="flex justify-center">
+                <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-navy-medium via-navy-medium/60 to-white/10 p-6 shadow-2xl">
+                  <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-navy-medium/40 via-ocean/30 to-white/40 flex items-center justify-center overflow-hidden">
+                    <img src="/placeholder.svg" alt="Thrive Bottle" className="w-4/5 h-4/5 object-contain drop-shadow" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
-      </div>
 
       <Footer />
     </div>

@@ -43,13 +43,11 @@ export function Navbar() {
       <nav
         className={cn(
           "fixed top-0 z-50 w-full transition-all duration-300",
-          isScrolled 
-            ? "py-2 mx-auto px-4 lg:px-8" 
-            : "py-6"
+          isScrolled ? "py-2" : "py-6"
         )}
       >
         <div className={cn(
-          "container mx-auto px-4 lg:px-8 transition-all duration-300",
+          "container mx-auto px-6 lg:px-10 transition-all duration-300",
           isScrolled && "bg-black/90 backdrop-blur-xl rounded-full py-5 mt-2"
         )}>
           <div className="flex items-center justify-between relative">
@@ -66,7 +64,7 @@ export function Navbar() {
             </a>
 
             {/* Desktop Navigation - Centered */}
-            <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            <div className="hidden lg:flex items-center gap-4 absolute left-1/2 -translate-x-1/2">
               {navLinks.map((link) => (
                 <div
                   key={link.label}
@@ -76,7 +74,10 @@ export function Navbar() {
                 >
                   <a
                     href={link.href}
-                    className="flex items-center gap-1 px-4 py-2 text-white/90 hover:text-white transition-colors font-medium drop-shadow-sm hover:drop-shadow-[0_0_10px_rgba(56,189,248,0.9)]"
+                    className={cn(
+                      "flex items-center gap-1 px-4 py-2 text-white font-medium transition-colors duration-200",
+                      "hover:text-ocean"
+                    )}
                   >
                     {link.label}
                     {link.hasDropdown && (
@@ -90,7 +91,14 @@ export function Navbar() {
                   {/* Dropdown */}
                   {link.hasDropdown && activeDropdown === link.label && (
                     <div className="absolute top-full left-0 pt-2 animate-fade-in">
-                      <div className="glass rounded-xl p-2 min-w-[200px] shadow-elevated">
+                      <div
+                        className={cn(
+                          "rounded-xl p-2 min-w-[220px] border border-border transition-colors",
+                          isScrolled
+                            ? "bg-black/90 backdrop-blur-xl"
+                            : "bg-black/30 backdrop-blur-xl hover:bg-neutral-800/95 duration-0"
+                        )}
+                      >
                         {link.dropdownItems?.map((item) => (
                           <a
                             key={item.label}
@@ -142,7 +150,7 @@ export function Navbar() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="px-4 py-3 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors font-medium drop-shadow-sm hover:drop-shadow-[0_0_10px_rgba(56,189,248,0.9)]"
+                  className="px-4 py-3 rounded-lg text-white font-medium transition-colors duration-200 hover:text-ocean"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}

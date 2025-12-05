@@ -91,7 +91,7 @@ const Featured = () => {
                                     <p className="text-xs text-glacier font-medium mb-2 uppercase tracking-wide">
                                         {product.category}
                                     </p>
-                                    <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2">
+                                    <h3 className="font-display text-xl font-bold text-foreground mb-3 line-clamp-2 tracking-[0.02em]">
                                         {product.name}
                                     </h3>
                                     <p className="text-3xl font-bold text-glacier mb-4">

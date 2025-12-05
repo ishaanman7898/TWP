@@ -33,12 +33,15 @@ export default function WaterBottlesPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
+            <div className="relative">
+                <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+
             {/* Hero Section */}
-            <section className="pt-40 pb-16 bg-gradient-to-b from-sky-500/10 to-background relative overflow-hidden">
+            <section className="pt-48 pb-20 bg-gradient-to-b from-sky-500/10 to-background relative overflow-hidden">
                 <div className="absolute inset-0 matrix-dots opacity-20"></div>
 
                 <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
-                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4">
                         Water <span className="text-gradient">Bottles</span>
                     </h1>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -64,6 +67,7 @@ export default function WaterBottlesPage() {
                 </div>
             </section>
 
+            </div>
             <Footer />
         </div>
     );
@@ -119,7 +123,7 @@ function ProductCard({ variants, index, addToCart }: { variants: Product[]; inde
 
             <div className="p-3 sm:p-5 flex flex-col flex-grow">
                 <p className="text-xs text-muted-foreground mb-1">SKU: {product.sku}</p>
-                <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2">
+                <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-2 line-clamp-2 tracking-[0.02em]">
                     <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
                         {product.groupName}
                     </Link>

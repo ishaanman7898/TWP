@@ -97,8 +97,11 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="pt-28 pb-12">
-        <div className="container mx-auto px-4 lg:px-8">
+      <div className="relative">
+        <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+
+      <section className="pt-48 pb-12 relative">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
           {/* Breadcrumbs */}
           <div className="text-sm text-muted-foreground mb-6">
             <Link to="/shop" className="hover:underline">Shop</Link>
@@ -106,7 +109,7 @@ export default function ProductDetail() {
             <span className="text-foreground">{selected.groupName}</span>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12">
             {/* Gallery */}
             <div className={cn("relative rounded-2xl border border-border p-6", getCategoryBg(category))}>
               {selected.image ? (
@@ -123,10 +126,10 @@ export default function ProductDetail() {
 
             {/* Info */}
             <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+              <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-[0.02em] text-foreground mb-4">
                 {selected.groupName}
               </h1>
-              <p className="text-muted-foreground mb-6">{groupDescription}</p>
+              <p className="text-muted-foreground mb-8">Choose your preferred option and add to cart.</p>
 
               <div className="flex items-center gap-4 mb-6">
                 <div>
@@ -151,7 +154,7 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-8">
                 <div>
                   <p className="text-xs text-muted-foreground">SKU: {selected.sku}</p>
                   {selected.color && (
@@ -160,7 +163,7 @@ export default function ProductDetail() {
                     </p>
                   )}
                 </div>
-                <span className="text-3xl font-display font-bold text-foreground">${selected.price.toFixed(2)}</span>
+                <span className="text-4xl md:text-5xl font-display font-bold text-foreground">${selected.price.toFixed(2)}</span>
               </div>
 
               {/* Quantity Selector */}
@@ -205,6 +208,43 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+
+      {/* Description Section */}
+      <section className="pb-16">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
+            <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Products */}
+      <section className="pb-20">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <h3 className="font-display text-xl md:text-2xl font-bold mb-6 tracking-[0.02em]">Related Products</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products
+              .filter(p => p.category === category && p.groupName !== selected.groupName)
+              .slice(0, 4)
+              .map((p, i) => (
+                <Link key={`${p.id}-${i}`} to={`/product/${slugify(p.groupName)}`} className="group block rounded-xl border border-border p-4 hover:border-primary/50 transition">
+                  <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                    {p.image ? (
+                      <img src={p.image} alt={p.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="text-5xl font-display text-foreground/10">{p.groupName.charAt(0)}</div>
+                    )}
+                  </div>
+                  <div className="font-display font-bold tracking-[0.02em]">{p.groupName}</div>
+                  <div className="text-muted-foreground text-sm">${p.price.toFixed(2)}</div>
+                </Link>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      </div>
 
       <Footer />
     </div>

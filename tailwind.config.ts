@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Sora', 'sans-serif'],
+        sans: ['League Spartan', 'sans-serif'],
+        display: ['Lilita One', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -93,12 +93,34 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        // Moving gradient for CTA button backgrounds
+        "gradient-x": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        // Subtle pulsing glow for the WORKS oval
+        "glow-pulse": {
+          "0%": { opacity: "0.5", filter: "blur(10px)" },
+          "50%": { opacity: "0.85", filter: "blur(14px)" },
+          "100%": { opacity: "0.5", filter: "blur(10px)" },
+        },
+        wave: {
+          "0%": { transform: "translateY(0)" },
+          "25%": { transform: "translateY(-6px)" },
+          "50%": { transform: "translateY(0)" },
+          "75%": { transform: "translateY(6px)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
+        "gradient-x": "gradient-x 10s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2.4s ease-in-out infinite",
+        wave: "wave 2.6s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
