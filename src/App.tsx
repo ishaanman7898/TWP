@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
-import { FloatingCart } from "@/components/FloatingCart";
 import { PageLoader } from "@/components/PageLoader";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
@@ -26,6 +25,8 @@ import Supplements from "./pages/Supplements";
 import Accessories from "./pages/Accessories";
 import Bundles from "./pages/Bundles";
 import Cart from "./pages/Cart";
+import CheckoutLoading from "./pages/CheckoutLoading";
+import CheckoutManual from "./pages/CheckoutManual";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,8 @@ const App = () => (
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart-test" element={<CartTest />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout-loading" element={<CheckoutLoading />} />
+            <Route path="/checkout-manual" element={<CheckoutManual />} />
             <Route path="/about" element={<About />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/login" element={<Login />} />
@@ -58,7 +61,6 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <FloatingCart />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>

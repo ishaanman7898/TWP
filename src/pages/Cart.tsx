@@ -6,7 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
 
 export default function Cart() {
-  const { cart, removeFromCart, totalPrice, totalItems, checkout, isCheckingOut } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, checkout, isCheckingOut } = useCart();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -36,37 +36,73 @@ export default function Cart() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
-                {cart.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className="glass rounded-xl p-4 md:p-6 flex flex-col sm:flex-row gap-4"
-                  >
-                    {/* Product Image Placeholder */}
-                    <div className="w-full sm:w-24 h-24 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
-                      ) : (
-                        <ShoppingBag className="w-8 h-8 text-muted-foreground" />
-                      )}
-                    </div>
-
-                    {/* Product Details */}
-                    <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{item.name}</h3>
-                        <p className="text-primary font-bold">${(item.price || 0).toFixed(2)}</p>
+                {cart.map((item, index) => {
+                  const qty = item.quantity || 1;
+                  const unit = item.price || 0;
+                  const line = unit * qty;
+                  return (
+                    <div 
+                      key={index} 
+                      className="glass rounded-xl p-4 md:p-6 flex flex-col sm:flex-row gap-4"
+                    >
+                      {/* Product Image Placeholder */}
+                      <div className="w-full sm:w-24 h-24 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                        ) : (
+                          <ShoppingBag className="w-8 h-8 text-muted-foreground" />
+                        )}
                       </div>
 
-                      {/* Remove Button */}
-                      <button
-                        onClick={() => removeFromCart(index)}
-                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors self-end sm:self-auto"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      {/* Product Details */}
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-lg truncate">{item.name}{qty > 1 ? ` × ${qty}` : ''}</h3>
+                          <p className="text-muted-foreground text-sm">Unit: ${unit.toFixed(2)}</p>
+                        </div>
+
+                        {/* Quantity Selector */}
+                        <div className="flex items-center justify-start sm:justify-center gap-2">
+                          <button
+                            onClick={() => updateQuantity(index, Math.max(0, qty - 1))}
+                            className="px-3 py-2 rounded-lg border border-border hover:bg-white/10"
+                            aria-label="Decrease quantity"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min={0}
+                            value={qty}
+                            onChange={(e) => updateQuantity(index, Math.max(0, parseInt(e.target.value || '0', 10)))}
+                            className="w-14 text-center bg-transparent border border-border rounded-lg py-2"
+                          />
+                          <button
+                            onClick={() => updateQuantity(index, qty + 1)}
+                            className="px-3 py-2 rounded-lg border border-border hover:bg-white/10"
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Line Price + Remove */}
+                        <div className="flex items-center justify-between sm:justify-end gap-3">
+                          <div className="text-right">
+                            <div className="text-primary font-bold">${line.toFixed(2)}</div>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(index)}
+                            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Order Summary */}

@@ -42,14 +42,22 @@ export function Navbar() {
       {/* Main Navbar */}
       <nav
         className={cn(
-          "fixed top-0 z-50 w-full transition-all duration-300",
-          isScrolled ? "py-2" : "py-6"
+          "fixed top-0 z-50 w-full transition-[padding,background-color] duration-500 ease-out",
+          isScrolled ? "py-2" : "py-5"
         )}
       >
         <div className={cn(
-          "container mx-auto px-6 lg:px-10 transition-all duration-300",
-          isScrolled && "bg-black/90 backdrop-blur-xl rounded-full py-5 mt-2"
-        )}>
+          "container mx-auto px-6 lg:px-10 transition-all duration-500 ease-out"
+        )}
+        >
+          <div
+            className={cn(
+              "relative mx-auto mt-2 transition-[max-width,background-color,backdrop-filter,border-radius,padding] duration-500 ease-out",
+              isScrolled
+                ? "max-w-[min(82vw,1100px)] bg-black/90 backdrop-blur-xl rounded-full px-8 md:px-10 lg:px-12 xl:px-16 py-4"
+                : "max-w-[min(96vw,1500px)] bg-transparent px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-6"
+            )}
+          >
           <div className="flex items-center justify-between relative">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 group flex-shrink-0">
@@ -57,8 +65,9 @@ export function Navbar() {
                 src="/Thrive.png" 
                 alt="Thrive" 
                 className={cn(
-                  "w-auto object-contain drop-shadow transition-all duration-300",
-                  isScrolled ? "h-12 md:h-14" : "h-20 md:h-24"
+                  "w-auto object-contain drop-shadow transition-transform duration-500 origin-left",
+                  "h-16 md:h-20",
+                  isScrolled ? "scale-90" : "scale-110"
                 )} 
               />
             </a>
@@ -139,6 +148,7 @@ export function Navbar() {
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </Button>
+          </div>
           </div>
         </div>
 
