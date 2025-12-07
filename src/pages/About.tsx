@@ -69,15 +69,7 @@ export default function About() {
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
             Learn about Thrive's journey, mission, and values.
           </p>
-          {/* Scroll-down indicator - at top center */}
-          <button
-            type="button"
-            aria-label="Scroll down"
-            onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
-            className="absolute top-6 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
-          >
-            <ChevronDown className="w-8 h-8 text-white/80" />
-          </button>
+    
         </div>
       </section>
 

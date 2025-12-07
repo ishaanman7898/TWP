@@ -67,14 +67,7 @@ export default function WaterBottlesPage() {
                     </p>
                 </div>
                 {/* Scroll-down indicator at true hero bottom, outside .container */}
-                <button
-                    type="button"
-                    aria-label="Scroll down"
-                    onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
-                >
-                    <ChevronDown className="w-8 h-8 text-white/80" />
-                </button>
+                {/* REMOVE ChevronDown button here in hero section */}
             </section>
 
             {/* Products Grid */}
@@ -86,7 +79,9 @@ export default function WaterBottlesPage() {
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {groupedProducts.map((group, index) => (
-                            <ProductCard key={group[0].id} variants={group} index={index} addToCart={addToCart} />
+                            ["The Glacier", "The Iceberg"].includes(group[0].groupName)
+                                ? <FeatureWaterBottleCard key={group[0].id} variant={group[0]} addToCart={addToCart} />
+                                : <ProductCard key={group[0].id} variants={group} index={index} addToCart={addToCart} />
                         ))}
                     </div>
                 </div>
@@ -250,6 +245,35 @@ function ProductCard({ variants, index, addToCart }: { variants: Product[]; inde
                     >
                         <ShoppingCart className="w-5 h-5 mr-2" />
                         Add to Cart
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function FeatureWaterBottleCard({ variant, addToCart }) {
+    // modern, edge-to-edge, visually striking card for Apple-style product highlight
+    const oz = variant.groupName === "The Glacier" ? "40 oz" : variant.groupName === "The Iceberg" ? "32 oz" : "";
+    return (
+        <div className="relative col-span-2 xl:col-span-3 flex flex-col md:flex-row items-center justify-center min-h-[400px] md:min-h-[340px] bg-gradient-to-br from-navy-medium/90 via-background to-white/30 border border-glacier rounded-3xl shadow-2xl overflow-hidden px-0 py-8 animate-fade-in-up">
+            <div className="relative flex-1 w-full h-80 md:h-full flex items-center justify-center p-4"><img src={variant.image} alt={variant.name} className="object-contain w-full max-w-xs md:max-w-md drop-shadow-2xl mx-auto select-none" draggable={false} /></div>
+            <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left px-4 md:px-10 py-6 gap-4">
+                <span className="inline-block bg-white/80 text-glacier font-bold px-6 py-1 rounded-full shadow text-base tracking-wider mb-2 uppercase letter-spacing-tight">{oz}</span>
+                <h2 className="font-display text-3xl md:text-5xl font-bold text-navy-900 drop-shadow">{variant.groupName}</h2>
+                <p className="mt-2 text-lg text-navy-800/90 font-medium">Premium insulated water bottle. Modern design. Lifetime durability.</p>
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
+                    <Button
+                        size="xl"
+                        className="bg-glacier text-white text-lg font-extrabold px-12 py-4 shadow-lg hover:shadow-glacier/40 hover:bg-glacier/90 rounded-full min-w-[170px] transition-all"
+                        onClick={() => addToCart({
+                            name: variant.name,
+                            link: variant.buyLink,
+                            price: variant.price,
+                            image: variant.image,
+                        })}
+                    >
+                        Add to Cart – ${variant.price.toFixed(2)}
                     </Button>
                 </div>
             </div>

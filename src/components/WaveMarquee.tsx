@@ -18,7 +18,7 @@ const TEXT_SEQUENCE = [
 ];
 
 export function WaveMarquee({
-  speedSeconds = 30, // slow default
+  speedSeconds = 15, // faster default
   amplitudePx = 15,
   tightnessSeconds = -0.0001,
   repeats = 100,
