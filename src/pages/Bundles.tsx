@@ -64,16 +64,6 @@ export default function BundlesPage() {
                 </div>
             </section>
 
-            {/* Scroll Indicator */}
-            <button
-                type="button"
-                aria-label="Scroll down"
-                onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
-            >
-                <ChevronDown className="w-8 h-8 text-white/80" />
-            </button>
-
             <section className="py-12 relative">
                 <div className="container mx-auto px-4 lg:px-8 relative z-10">
                     <p className="text-sm text-muted-foreground mb-6">
@@ -86,6 +76,14 @@ export default function BundlesPage() {
                     </div>
                 </div>
             </section>
+            <button
+                type="button"
+                aria-label="Scroll down"
+                onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
+            >
+                <ChevronDown className="w-8 h-8 text-white/80" />
+            </button>
             </div>
             <Footer />
         </div>

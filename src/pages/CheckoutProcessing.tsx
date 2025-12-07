@@ -14,6 +14,9 @@ export default function CheckoutProcessing() {
     const [finalCartUrl, setFinalCartUrl] = useState<string | null>(null);
     const [clickedItems, setClickedItems] = useState<Set<string>>(new Set());
     const hasStarted = useRef(false);
+    const [networkBannerVisible, setNetworkBannerVisible] = useState(false);
+    const lastProgressRef = useRef(progress.processed);
+    const lastProgressTimeRef = useRef(Date.now());
 
     // Cart server URL
     const CART_SERVER_URL = import.meta.env.VITE_CART_SERVER_URL || "http://localhost:3001";
@@ -67,6 +70,29 @@ export default function CheckoutProcessing() {
             startCheckout();
         }
     }, [cart, navigate, sessionId, CART_SERVER_URL]);
+
+    useEffect(() => {
+        if (status !== "processing") {
+            setNetworkBannerVisible(false);
+            return; // Hide immediately on finish or error
+        }
+        if (progress.processed !== lastProgressRef.current) {
+            lastProgressRef.current = progress.processed;
+            lastProgressTimeRef.current = Date.now();
+            setNetworkBannerVisible(false);
+            return; // Hide on any processed increase
+        }
+        const stallTimeout = setTimeout(() => {
+            if (
+                status === "processing" &&
+                progress.processed === lastProgressRef.current &&
+                Date.now() - lastProgressTimeRef.current >= 6000
+            ) {
+                setNetworkBannerVisible(true);
+            }
+        }, 6000);
+        return () => clearTimeout(stallTimeout);
+    }, [progress.processed, status]);
 
     const pollStatus = async (sid: string) => {
         const checkStatus = async () => {
@@ -247,15 +273,12 @@ export default function CheckoutProcessing() {
                     )}
 
                     {status === "manual" && (
-                        <div className="w-full h-[80vh] flex flex-col">
-                            <div className="flex-shrink-0">
-                                <h1 className="font-display text-3xl font-bold mb-2">Manual Checkout</h1>
-                                <p className="text-muted-foreground mb-6">
-                                    Follow these steps to complete your purchase:
-                                </p>
+                        <div className="w-full h-[80vh] flex flex-col items-center justify-center">
+                            <div className="flex-shrink-0 w-full max-w-xl mx-auto">
+                                <h1 className="font-display text-3xl font-bold mb-2 text-center">Manual Checkout</h1>
+                                <p className="text-muted-foreground mb-6 text-center">Follow these steps to complete your purchase:</p>
                             </div>
-
-                            <div className="flex-grow overflow-y-auto pr-2 space-y-4">
+                            <div className="flex-grow overflow-y-auto pr-2 space-y-4 w-full max-w-xl mx-auto">
                                 <div className="step">
                                     <p className="font-semibold mb-2 flex items-center">
                                         <span className="bg-primary/10 text-primary w-6 h-6 rounded-full inline-flex items-center justify-center text-sm mr-2">1</span>
@@ -333,6 +356,15 @@ export default function CheckoutProcessing() {
                     )}
                 </div>
             </div>
+            {/* Network Access Banner - right corner */}
+            {networkBannerVisible && status === "processing" && (
+              <div className="fixed top-8 right-8 z-[100] animate-fade-in-up">
+                <div className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg border-2 border-red-700 flex items-center gap-3 text-base font-bold">
+                  <AlertTriangle className="w-6 h-6 mr-2 text-white shrink-0" />
+                  Allow local network activity if prompted — this lets us send your order to VE. Click <span className="underline font-extrabold ml-1">Allow</span> on any browser pop-up!
+                </div>
+              </div>
+            )}
         </div>
     );
 }

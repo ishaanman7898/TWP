@@ -25,7 +25,7 @@ const navLinks = [
     hasDropdown: true,
     dropdownItems: [
       { label: "About Us", href: "/about" },
-      { label: "Mission", href: "/mission" },
+      { label: "Our Mission", href: "/mission" },
       { label: "Our Team", href: "/team" },
       { label: "Newsletter", href: "/newsletter" },
     ]

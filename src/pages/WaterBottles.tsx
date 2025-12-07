@@ -59,24 +59,23 @@ export default function WaterBottlesPage() {
 
                 {/* Content */}
                 <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
-                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+                    <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
                         Water <span className="text-gradient">Bottles</span>
                     </h1>
-                    <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+                    <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
                         Premium insulated water bottles designed to keep your drinks at the perfect temperature.
                     </p>
                 </div>
+                {/* Scroll-down indicator at true hero bottom, outside .container */}
+                <button
+                    type="button"
+                    aria-label="Scroll down"
+                    onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
+                >
+                    <ChevronDown className="w-8 h-8 text-white/80" />
+                </button>
             </section>
-
-            {/* Scroll Indicator */}
-            <button
-                type="button"
-                aria-label="Scroll down"
-                onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
-            >
-                <ChevronDown className="w-8 h-8 text-white/80" />
-            </button>
 
             {/* Products Grid */}
             <section className="py-12 relative">

@@ -18,7 +18,7 @@ const TEXT_SEQUENCE = [
 ];
 
 export function WaveMarquee({
-  speedSeconds = 1,
+  speedSeconds = 30, // slow default
   amplitudePx = 15,
   tightnessSeconds = -0.0001,
   repeats = 100,
@@ -32,10 +32,8 @@ export function WaveMarquee({
 
   let charIndex = 0;
   const blocks = [] as JSX.Element[];
-
   for (let r = 0; r < repeats; r++) {
     TEXT_SEQUENCE.forEach((word) => {
-      // letters
       for (let i = 0; i < word.length; i++) {
         blocks.push(
           <span
@@ -48,12 +46,10 @@ export function WaveMarquee({
         );
         charIndex++;
       }
-      // space
       blocks.push(
         <span key={`${r}-${word}-space-a-${charIndex}`} className="wave-space" style={{ ["--i" as any]: charIndex } as CSSProperties}>&nbsp;</span>
       );
       charIndex++;
-      // wave divider
       blocks.push(
         <span
           key={`${r}-${word}-divider-${charIndex}`}
@@ -64,7 +60,6 @@ export function WaveMarquee({
         </span>
       );
       charIndex++;
-      // space
       blocks.push(
         <span key={`${r}-${word}-space-b-${charIndex}`} className="wave-space" style={{ ["--i" as any]: charIndex } as CSSProperties}>&nbsp;</span>
       );
@@ -77,16 +72,20 @@ export function WaveMarquee({
       <style>{`
         .wave-container {
           position: relative;
-          width: 100%;
+          width: 100vw;
+          max-width: 100vw;
+          min-width: 100vw;
           overflow: hidden;
-          padding: calc(var(--amplitude) + 20px) 0; /* Add padding to prevent cutoff */
+          padding: calc(var(--amplitude) + 20px) 0;
           margin: 0;
         }
         .wave-track {
-          display: inline-flex;
+          display: flex;
+          width: max-content;
+          min-width: 200vw;
           white-space: nowrap;
           will-change: transform;
-          animation: wave-scroll var(--scroll-speed) linear infinite;
+          animation: wave-scroll-l2r var(--scroll-speed) linear infinite;
         }
         .wave-char {
           display: inline-block;
@@ -99,9 +98,9 @@ export function WaveMarquee({
           animation: wave-float 2s ease-in-out infinite;
           animation-delay: calc(var(--i) * var(--tightness));
         }
-        @keyframes wave-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes wave-scroll-l2r {
+          0% { transform: translateX(-50vw); }
+          100% { transform: translateX(0); }
         }
         @keyframes wave-float {
           0%, 100% { transform: translateY(0); }

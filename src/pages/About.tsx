@@ -2,7 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Heart, Leaf, Shield, Award, Users, Target } from "lucide-react";
+import { ArrowRight, Heart, Leaf, Shield, Award, Users, Target, ChevronDown } from "lucide-react";
 
 export default function About() {
   const values = [
@@ -59,19 +59,25 @@ export default function About() {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
           <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
         </div>
-        
         {/* Darker overlay for text readability */}
         <div className="absolute inset-0 bg-black/40 z-10"></div>
-
         {/* Content */}
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-            Our <span className="text-gradient">Story</span>
+            About <span className="text-gradient">Us</span>
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
-            At Thrive, we believe that wellness isn't just about supplements—it's about empowering you to live your best life.
-            Born from a passion for health and a commitment to quality, we've dedicated ourselves to creating products that make a real difference.
+            Learn about Thrive's journey, mission, and values.
           </p>
+          {/* Scroll-down indicator - at top center */}
+          <button
+            type="button"
+            aria-label="Scroll down"
+            onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+            className="absolute top-6 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
+          >
+            <ChevronDown className="w-8 h-8 text-white/80" />
+          </button>
         </div>
       </section>
 
