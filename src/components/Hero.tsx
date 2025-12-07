@@ -47,7 +47,7 @@ export function Hero() {
       <div className="container mx-auto px-4 lg:px-8 relative z-20">
         <div className="max-w-5xl mx-auto text-center">
           {/* Big THRIVE Text */}
-          <h1 className="font-display text-[clamp(5rem,18vw,20rem)] font-black mb-4 md:mb-6 animate-fade-in-up tracking-[0.06em] leading-none text-center">
+          <h1 className="font-display text-[clamp(10rem,15vw,20rem)] font-black mb-4 md:mb-6 animate-fade-in-up tracking-[0.06em] leading-none text-center">
             <span className="text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">THRIVE</span>
           </h1>
 

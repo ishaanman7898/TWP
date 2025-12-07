@@ -108,8 +108,10 @@ export default function CheckoutProcessing() {
         setClickedItems(prev => new Set(prev).add(itemKey));
     };
 
+    const isLeftPosition = status === "processing" || status === "complete";
+    
     return (
-        <div className="fixed inset-0 z-[100] bg-background overflow-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-[50] bg-background overflow-auto flex items-center justify-start" style={{paddingLeft: '6vw', paddingRight: '0'}}>
             {/* Close Button */}
             <button
                 onClick={() => navigate("/cart")}
@@ -118,8 +120,8 @@ export default function CheckoutProcessing() {
                 <X className="w-6 h-6" />
             </button>
 
-            <div className="max-w-md w-full p-8">
-                <div className="flex flex-col items-center justify-center text-center">
+            <div className="max-w-md w-full p-8 mx-16 my-10 bg-card shadow-xl border border-border rounded-2xl flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center text-center w-full">
                     {status === "processing" && (
                         <>
                             {/* Animated Spinner */}
@@ -167,24 +169,19 @@ export default function CheckoutProcessing() {
                     )}
 
                     {status === "complete" && (
-                        <>
-                            <div className="relative mb-8">
+                        <div className="flex flex-col items-center justify-center w-full">
+                            <div className="relative mb-8 flex items-center justify-center">
                                 <div className="h-28 w-28 rounded-full bg-gradient-to-br from-emerald-500 to-glacier flex items-center justify-center animate-in zoom-in duration-300">
                                     <Check className="w-14 h-14 text-white" />
                                 </div>
                             </div>
-
                             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 text-emerald-500">
                                 Your Cart is Ready!
                             </h1>
-
-                            <p className="text-muted-foreground text-lg mb-8">
+                            <p className="text-muted-foreground text-lg mb-8 w-full">
                                 All items have been added. Complete your purchase in the opened window.
                             </p>
-
-                            <div className="space-y-4 w-full">
-
-
+                            <div className="space-y-4 w-full flex flex-col items-center">
                                 <Button
                                     variant="outline"
                                     onClick={() => navigate("/shop")}
@@ -193,7 +190,7 @@ export default function CheckoutProcessing() {
                                     Continue Shopping
                                 </Button>
                             </div>
-                        </>
+                        </div>
                     )}
 
                     {status === "error" && (

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { products, categories, Product } from "@/data/products";
-import { Search, ShoppingBag, ArrowUpDown, ShoppingCart } from "lucide-react";
+import { Search, ShoppingBag, ArrowUpDown, ShoppingCart, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
@@ -103,6 +103,16 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
             </p>
           </div>
         </section>
+
+        {/* Scroll Indicator */}
+        <button
+          type="button"
+          aria-label="Scroll down"
+          onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
+        >
+          <ChevronDown className="w-8 h-8 text-white/80" />
+        </button>
 
         {/* Filters & Products */}
         <section className="py-12">

@@ -22,33 +22,19 @@ export default function Contact() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Image Background */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
-          <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
-        </div>
-        
-        {/* Darker overlay for text readability */}
-        <div className="absolute inset-0 bg-black/40 z-10"></div>
-
-        {/* Content */}
-        <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-            Get in <span className="text-gradient">Touch</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
-            Have a question or feedback? We'd love to hear from you.
-          </p>
-        </div>
-      </section>
-
-      <main className="flex-1 pt-20 pb-20">
+      <main className="flex-1 pt-44 pb-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+                Get in <span className="text-glacier">Touch</span>
+              </h1>
+              <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+                Have a question or feedback? We'd love to hear from you.
+              </p>
+            </div>
 
-                        <div className="grid lg:grid-cols-3 gap-12">
+            <div className="grid lg:grid-cols-3 gap-12">
                             {/* Contact Info */}
                             <div className="space-y-8">
                                 <div className="glass rounded-xl p-6 border border-border">

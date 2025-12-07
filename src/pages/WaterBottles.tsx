@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { products, Product } from "@/data/products";
-import { ShoppingBag, ShoppingCart } from "lucide-react";
+import { ShoppingBag, ShoppingCart, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 
@@ -15,7 +15,7 @@ export default function WaterBottlesPage() {
         return products.filter((product) => product.category === "Water Bottles");
     }, []);
 
-    // Group products by groupName
+    // Group products by groupName, but split groups with <5 variants into individual products
     const groupedProducts = useMemo(() => {
         const groups: { [key: string]: Product[] } = {};
 
@@ -26,7 +26,19 @@ export default function WaterBottlesPage() {
             groups[product.groupName].push(product);
         });
 
-        return Object.values(groups);
+        // Split groups with <5 variants into individual products
+        const result: Product[][] = [];
+        Object.values(groups).forEach(group => {
+            if (group.length < 5) {
+                // Split into individual products
+                group.forEach(product => result.push([product]));
+            } else {
+                // Keep as grouped
+                result.push(group);
+            }
+        });
+
+        return result;
     }, [waterBottleProducts]);
 
     return (
@@ -55,6 +67,16 @@ export default function WaterBottlesPage() {
                     </p>
                 </div>
             </section>
+
+            {/* Scroll Indicator */}
+            <button
+                type="button"
+                aria-label="Scroll down"
+                onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
+            >
+                <ChevronDown className="w-8 h-8 text-white/80" />
+            </button>
 
             {/* Products Grid */}
             <section className="py-12 relative">

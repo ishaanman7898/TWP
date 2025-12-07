@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { products, Product } from "@/data/products";
-import { ShoppingCart, Package } from "lucide-react";
+import { ShoppingCart, Package, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 
@@ -23,7 +23,20 @@ export default function BundlesPage() {
             }
             groups[product.groupName].push(product);
         });
-        return Object.values(groups);
+        
+        // Split groups with <5 variants into individual products
+        const result: Product[][] = [];
+        Object.values(groups).forEach(group => {
+            if (group.length < 5) {
+                // Split into individual products
+                group.forEach(product => result.push([product]));
+            } else {
+                // Keep as grouped
+                result.push(group);
+            }
+        });
+        
+        return result;
     }, [bundlesProducts]);
 
     return (
@@ -50,6 +63,17 @@ export default function BundlesPage() {
                     </p>
                 </div>
             </section>
+
+            {/* Scroll Indicator */}
+            <button
+                type="button"
+                aria-label="Scroll down"
+                onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
+            >
+                <ChevronDown className="w-8 h-8 text-white/80" />
+            </button>
+
             <section className="py-12 relative">
                 <div className="container mx-auto px-4 lg:px-8 relative z-10">
                     <p className="text-sm text-muted-foreground mb-6">

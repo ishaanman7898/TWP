@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Mail, Check } from "lucide-react";
+import { Mail, Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export default function Newsletter() {
@@ -40,6 +40,16 @@ export default function Newsletter() {
           </p>
         </div>
       </section>
+
+      {/* Scroll Indicator */}
+      <button
+        type="button"
+        aria-label="Scroll down"
+        onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce z-20 hover:opacity-90 focus:outline-none"
+      >
+        <ChevronDown className="w-8 h-8 text-white/80" />
+      </button>
 
       <main className="flex-1 pt-20 pb-20">
         <div className="container mx-auto px-4 lg:px-8">

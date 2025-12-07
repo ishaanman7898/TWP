@@ -138,6 +138,9 @@ export function Footer() {
             <p className="text-xs text-muted-foreground italic">
               Disclaimer: This Virtual Enterprise online store is for educational purposes only (Thrive 2025-2026)
             </p>
+            <p className="text-xs text-muted-foreground/60 mt-2">
+              Version 1.2.7
+            </p>
           </div>
         </div>
       </div>
