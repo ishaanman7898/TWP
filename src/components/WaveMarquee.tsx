@@ -100,8 +100,8 @@ export function WaveMarquee({
           animation-delay: calc(var(--i) * var(--tightness));
         }
         @keyframes wave-scroll {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
         @keyframes wave-float {
           0%, 100% { transform: translateY(0); }

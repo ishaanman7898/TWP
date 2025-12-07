@@ -26,23 +26,36 @@ const missionPillars = [
 ];
 
 export default function Mission() {
-    return (
-        <div className="min-h-screen flex flex-col bg-background">
-            <Navbar />
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
 
-            <main className="flex-1 pt-44 pb-20">
-                <div className="container mx-auto px-4 lg:px-8">
-                    {/* Hero Section */}
-                    <div className="max-w-4xl mx-auto text-center mb-20">
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                            Our <span className="text-glacier">Mission</span>
-                        </h1>
-                        <p className="text-xl text-muted-foreground leading-relaxed">
-                            At Thrive, we believe that wellness should be simple, accessible, and sustainable.
-                            Our mission is to create innovative products that empower you to live your best life
-                            while caring for the planet we all share.
-                        </p>
-                    </div>
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Image Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
+          <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+        </div>
+        
+        {/* Darker overlay for text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+
+        {/* Content */}
+        <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            Our <span className="text-gradient">Mission</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+            At Thrive, we believe that wellness should be simple, accessible, and sustainable.
+            Our mission is to create innovative products that empower you to live your best life
+            while caring for the planet we all share.
+          </p>
+        </div>
+      </section>
+
+      <main className="flex-1 pt-20 pb-20">
+        <div className="container mx-auto px-4 lg:px-8">
 
                     {/* Vision Statement */}
                     <div className="glass rounded-2xl p-8 md:p-12 border border-border mb-20 max-w-4xl mx-auto">

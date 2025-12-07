@@ -18,7 +18,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center overflow-hidden pt-24">
       {/* Matrix Dots Background */}
       <div className="absolute inset-0 z-0">
         <div className="matrix-dots"></div>
@@ -47,12 +47,12 @@ export function Hero() {
       <div className="container mx-auto px-4 lg:px-8 relative z-20">
         <div className="max-w-5xl mx-auto text-center">
           {/* Big THRIVE Text */}
-          <h1 className="font-display text-[clamp(4rem,15vw,16rem)] font-black mb-4 md:mb-6 animate-fade-in-up tracking-[0.06em] leading-none">
+          <h1 className="font-display text-[clamp(5rem,18vw,20rem)] font-black mb-4 md:mb-6 animate-fade-in-up tracking-[0.06em] leading-none text-center">
             <span className="text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">THRIVE</span>
           </h1>
 
-          {/* WELLNESS THAT WORKS with oval around WORKS */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 animate-fade-in-up delay-100 mb-10 md:mb-12">
+          {/* WELLNESS THAT WORKS with oval around WORKS - aligned with THRIVE */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 animate-fade-in-up delay-100 mb-10 md:mb-12 w-full">
             <span className="font-display font-bold text-white tracking-wide text-[clamp(1.5rem,4vw,3rem)]">
               WELLNESS THAT
             </span>

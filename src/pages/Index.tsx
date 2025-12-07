@@ -61,12 +61,14 @@ const Index = () => {
       </section>
 
       {/* Wavy Scrolling Text */}
-      <section className="py-12 overflow-hidden bg-navy-medium relative z-10">
+      <section className="py-8 overflow-hidden bg-navy-medium relative z-10 -mt-4">
+        <div className="absolute inset-0 matrix-dots opacity-20" aria-hidden="true" />
         <WaveMarquee speedSeconds={25} amplitudePx={24} tightnessSeconds={-0.04} repeats={4} />
       </section>
 
       {/* Section Divider - Pure white */}
-      <div className="bg-navy-medium pt-12">
+      <div className="bg-navy-medium pt-2 relative -mt-4">
+        <div className="absolute inset-0 matrix-dots opacity-20" aria-hidden="true" />
         <div className="w-full h-px bg-white relative z-10"></div>
       </div>
 
@@ -114,7 +116,7 @@ const Index = () => {
             <div className="flex justify-center">
               <div className="relative w-full max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-navy-medium via-navy-medium/60 to-white/10 p-6 shadow-2xl overflow-hidden">
                 <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-navy-medium/40 via-ocean/30 to-white/40 flex items-center justify-center overflow-hidden">
-                  <img src="public/product-images/BO-43.png" alt="Thrive Bottle" className="w-full h-full object-cover" />
+                  <img src="/product-images/BO-43.png" alt="Thrive Bottle" className="w-full h-full object-contain" />
                 </div>
               </div>
             </div>

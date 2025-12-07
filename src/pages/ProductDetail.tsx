@@ -129,32 +129,45 @@ export default function ProductDetail() {
               <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-[0.02em] text-foreground mb-4">
                 {selected.groupName}
               </h1>
-              <p className="text-muted-foreground mb-8">Choose your preferred option and add to cart.</p>
+              
+              {/* About section - show below title if no variants */}
+              {variants.length === 1 && (
+                <div className="mb-8">
+                  <h2 className="font-display text-xl md:text-2xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
+                  <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
+                </div>
+              )}
 
-              <div className="flex items-center gap-4 mb-6">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {category === "Wellness" ? "Flavor" : "Color"}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {variants.map(v => (
-                      <button
-                        key={v.id}
-                        onClick={() => setSelected(v)}
-                        className={cn(
-                          "w-8 h-8 rounded-full border border-border transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50",
-                          selected.id === v.id && "ring-2 ring-primary scale-110",
-                          v.hexColor === "#FFFFFF" && "bg-white"
-                        )}
-                        style={{ backgroundColor: v.hexColor }}
-                        title={v.color}
-                      />
-                    ))}
+              {variants.length > 1 && (
+                <p className="text-muted-foreground mb-8">Choose your preferred option and add to cart.</p>
+              )}
+
+              {variants.length > 1 && (
+                <div className="flex items-center gap-4 mb-6">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {category === "Wellness" ? "Flavor" : "Color"}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {variants.map(v => (
+                        <button
+                          key={v.id}
+                          onClick={() => setSelected(v)}
+                          className={cn(
+                            "w-8 h-8 rounded-full border border-border transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50",
+                            selected.id === v.id && "ring-2 ring-primary scale-110",
+                            v.hexColor === "#FFFFFF" && "bg-white"
+                          )}
+                          style={{ backgroundColor: v.hexColor }}
+                          title={v.color}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="text-xs text-muted-foreground">SKU: {selected.sku}</p>
                   {selected.color && (
@@ -163,7 +176,6 @@ export default function ProductDetail() {
                     </p>
                   )}
                 </div>
-                <span className="text-4xl md:text-5xl font-display font-bold text-foreground">${selected.price.toFixed(2)}</span>
               </div>
 
               {/* Quantity Selector */}
@@ -192,6 +204,11 @@ export default function ProductDetail() {
                 </div>
               </div>
 
+              {/* Price */}
+              <div className="mb-6">
+                <span className="text-3xl md:text-4xl font-display font-bold text-foreground">${selected.price.toFixed(2)}</span>
+              </div>
+
               <div className="flex flex-wrap gap-3">
                 <Button onClick={handleAddToCart} className="rounded-full">
                   <ShoppingCart className="w-4 h-4 mr-2" />
@@ -209,15 +226,17 @@ export default function ProductDetail() {
         </div>
       </section>
 
-      {/* Description Section */}
-      <section className="pb-16">
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
-            <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
+      {/* Description Section - Show at bottom if variants exist */}
+      {variants.length > 1 && (
+        <section className="pb-16">
+          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+            <div className="max-w-3xl">
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
+              <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Related Products */}
       <section className="pb-20">

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingCart, Check, ExternalLink, Loader2, X, AlertTriangle, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function CheckoutProcessing() {
     const { cart, clearCart } = useCart();
@@ -11,6 +12,7 @@ export default function CheckoutProcessing() {
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [progress, setProgress] = useState({ processed: 0, total: 0 });
     const [finalCartUrl, setFinalCartUrl] = useState<string | null>(null);
+    const [clickedItems, setClickedItems] = useState<Set<string>>(new Set());
     const hasStarted = useRef(false);
 
     // Cart server URL
@@ -101,12 +103,13 @@ export default function CheckoutProcessing() {
         checkStatus();
     };
 
-    const openManualItem = (url: string) => {
+    const openManualItem = (url: string, itemKey: string) => {
         window.open(url, "_blank", "noopener,noreferrer");
+        setClickedItems(prev => new Set(prev).add(itemKey));
     };
 
     return (
-        <div className="fixed inset-0 z-[100] bg-background overflow-auto flex items-center justify-start pl-12 md:pl-24">
+        <div className="fixed inset-0 z-[100] bg-background overflow-auto flex items-center justify-center">
             {/* Close Button */}
             <button
                 onClick={() => navigate("/cart")}
@@ -116,7 +119,7 @@ export default function CheckoutProcessing() {
             </button>
 
             <div className="max-w-md w-full p-8">
-                <div className="flex flex-col items-start justify-center text-left">
+                <div className="flex flex-col items-center justify-center text-center">
                     {status === "processing" && (
                         <>
                             {/* Animated Spinner */}
@@ -195,8 +198,8 @@ export default function CheckoutProcessing() {
 
                     {status === "error" && (
                         <>
-                            <div className="h-28 w-28 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                                <AlertTriangle className="w-12 h-12 text-red-500" />
+                            <div className="h-28 w-28 mb-8 rounded-full bg-red-500/20 flex items-center justify-center mx-auto">
+                                <X className="w-12 h-12 text-red-500" />
                             </div>
 
                             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 text-red-500">
@@ -204,7 +207,7 @@ export default function CheckoutProcessing() {
                             </h1>
 
                             <p className="text-muted-foreground text-lg mb-6">
-                                We couldn't complete the automated checkout. Please try again or use the manual checkout.
+                                Something went wrong with your cart. Please use manual checkout to complete your purchase.
                             </p>
 
                             <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8">
@@ -259,30 +262,45 @@ export default function CheckoutProcessing() {
                                 <div className="step">
                                     <p className="font-semibold mb-2 flex items-center">
                                         <span className="bg-primary/10 text-primary w-6 h-6 rounded-full inline-flex items-center justify-center text-sm mr-2">1</span>
-                                        Add items one by one:
+                                        Click each product once and come back to this page to add your other products:
                                     </p>
                                     <div className="space-y-3 pl-8">
-                                        {cart.map((item, i) => (
-                                            <div key={`${item.link}-${i}`} className="bg-card border border-border rounded-lg p-3 flex items-center justify-between">
-                                                <div className="flex-1 min-w-0 mr-3">
-                                                    <p className="font-medium truncate">{item.name}</p>
-                                                    <p className="text-xs text-muted-foreground">Qty: {item.quantity || 1}</p>
-                                                </div>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="shrink-0"
-                                                    onClick={() => {
-                                                        const times = Math.max(1, item.quantity || 1);
-                                                        for (let k = 0; k < times; k++) {
-                                                            openManualItem(`${item.link}?nocache=${Date.now() + i * 100 + k}`);
-                                                        }
-                                                    }}
-                                                >
-                                                    Add
-                                                </Button>
-                                            </div>
-                                        ))}
+                                        {cart.flatMap((item, i) => {
+                                            const quantity = Math.max(1, item.quantity || 1);
+                                            return Array.from({ length: quantity }, (_, k) => {
+                                                const itemKey = `${item.link}-${i}-${k}`;
+                                                const isClicked = clickedItems.has(itemKey);
+                                                return (
+                                                    <div key={itemKey} className={cn(
+                                                        "bg-card border rounded-lg p-3 flex items-center justify-between transition-all",
+                                                        isClicked ? "border-green-500 bg-green-500/10" : "border-border"
+                                                    )}>
+                                                        <div className="flex-1 min-w-0 mr-3 flex items-center gap-2">
+                                                            {isClicked && (
+                                                                <Check className="w-5 h-5 text-green-500 shrink-0" />
+                                                            )}
+                                                            <div>
+                                                                <p className="font-medium truncate">{item.name}</p>
+                                                                <p className="text-xs text-muted-foreground">Click to add</p>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            size="sm"
+                                                            variant={isClicked ? "default" : "outline"}
+                                                            className={cn(
+                                                                "shrink-0",
+                                                                isClicked && "bg-green-500 hover:bg-green-600"
+                                                            )}
+                                                            onClick={() => {
+                                                                openManualItem(`${item.link}?nocache=${Date.now() + i * 100 + k}`, itemKey);
+                                                            }}
+                                                        >
+                                                            {isClicked ? "Added" : "Add"}
+                                                        </Button>
+                                                    </div>
+                                                );
+                                            });
+                                        })}
                                     </div>
                                 </div>
 

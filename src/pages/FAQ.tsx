@@ -41,19 +41,35 @@ const faqs = [
 export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    return (
-        <div className="min-h-screen flex flex-col bg-background">
-            <Navbar />
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
 
-            <main className="flex-1 pt-44 pb-20">
-                <div className="container mx-auto px-4 lg:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center">
-                            Frequently Asked <span className="text-glacier">Questions</span>
-                        </h1>
-                        <p className="text-muted-foreground text-lg text-center mb-12">
-                            Got questions? We've got answers.
-                        </p>
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Image Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
+          <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+        </div>
+        
+        {/* Darker overlay for text readability */}
+        <div className="absolute inset-0 bg-black/40 z-10"></div>
+
+        {/* Content */}
+        <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            Frequently Asked <span className="text-gradient">Questions</span>
+          </h1>
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+            Got questions? We've got answers.
+          </p>
+        </div>
+      </section>
+
+      <main className="flex-1 pt-20 pb-20">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-3xl mx-auto">
 
                         <div className="space-y-4">
                             {faqs.map((faq, index) => (

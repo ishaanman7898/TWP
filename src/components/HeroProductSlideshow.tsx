@@ -16,6 +16,7 @@ export function HeroProductSlideshow() {
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
+    const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
     const { addToCart } = useCart();
 
     useEffect(() => {
@@ -73,16 +74,41 @@ export function HeroProductSlideshow() {
                             <div className="flex items-center justify-between">
                                 <span className="text-3xl font-display font-bold text-white">${product.price.toFixed(2)}</span>
 
-                                {/* Quantity - Just visual for the slideshow */}
+                                {/* Quantity Selector */}
                                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/10 hidden sm:flex">
-                                    <button className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-colors">−</button>
-                                    <span className="w-8 text-center font-medium text-white text-sm">1</span>
-                                    <button className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-colors">+</button>
+                                    <button 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const qty = quantities[product.id] || 1;
+                                            setQuantities({ ...quantities, [product.id]: Math.max(1, qty - 1) });
+                                        }}
+                                        className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-colors"
+                                    >
+                                        −
+                                    </button>
+                                    <span className="w-8 text-center font-medium text-white text-sm">{quantities[product.id] || 1}</span>
+                                    <button 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const qty = quantities[product.id] || 1;
+                                            setQuantities({ ...quantities, [product.id]: Math.min(99, qty + 1) });
+                                        }}
+                                        className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm font-bold transition-colors"
+                                    >
+                                        +
+                                    </button>
                                 </div>
                             </div>
 
                             <Button
-                                onClick={() => addToCart({ ...product, quantity: 1, link: `/product/${product.id}` })}
+                                onClick={() => {
+                                    const qty = quantities[product.id] || 1;
+                                    for (let i = 0; i < qty; i++) {
+                                        addToCart({ ...product, quantity: 1, link: `/product/${product.id}` });
+                                    }
+                                }}
                                 className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
                             >
                                 <ShoppingCart className="w-5 h-5 mr-2" />

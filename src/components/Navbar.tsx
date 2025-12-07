@@ -19,8 +19,27 @@ const navLinks = [
       { label: "All Products", href: "/shop" },
     ]
   },
-  { label: "About", href: "/about" },
-  { label: "Newsletter", href: "/newsletter" },
+  {
+    label: "Company",
+    href: "/about",
+    hasDropdown: true,
+    dropdownItems: [
+      { label: "About Us", href: "/about" },
+      { label: "Mission", href: "/mission" },
+      { label: "Our Team", href: "/team" },
+      { label: "Newsletter", href: "/newsletter" },
+    ]
+  },
+  {
+    label: "Support",
+    href: "/faq",
+    hasDropdown: true,
+    dropdownItems: [
+      { label: "FAQ", href: "/faq" },
+      { label: "Shipping", href: "/shipping" },
+      { label: "Contact Us", href: "/contact" },
+    ]
+  },
 ];
 
 export function Navbar() {
@@ -65,8 +84,8 @@ export function Navbar() {
                   alt="Thrive"
                   className={cn(
                     "w-auto object-contain drop-shadow transition-transform duration-500 origin-left",
-                    "h-16 md:h-20",
-                    isScrolled ? "scale-90" : "scale-110"
+                    "h-20 md:h-24 lg:h-28",
+                    isScrolled ? "scale-75" : "scale-110"
                   )}
                 />
               </a>
@@ -104,7 +123,7 @@ export function Navbar() {
                             "rounded-xl p-2 min-w-[220px] border border-border transition-colors",
                             isScrolled
                               ? "bg-black/90 backdrop-blur-xl"
-                              : "bg-black/30 backdrop-blur-xl hover:bg-neutral-800/95 duration-0"
+                              : "bg-black/90 backdrop-blur-xl"
                           )}
                         >
                           {link.dropdownItems?.map((item) => (
@@ -136,7 +155,7 @@ export function Navbar() {
                 </Link>
 
                 {/* Shop Button */}
-                <Button variant="nav-cta" className="rounded-full px-6" asChild>
+                <Button variant="nav-cta" className="rounded-full px-6 group relative hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:shadow-blue-500/50 transition-all duration-300" asChild>
                   <Link to="/shop">
                     Shop
                   </Link>

@@ -41,6 +41,7 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
       const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.groupName.toLowerCase().includes(searchQuery.toLowerCase());
+      
       return matchesCategory && matchesSearch;
     });
 
@@ -82,15 +83,22 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
         <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
 
         {/* Hero Section */}
-        <section className="pt-48 pb-20 bg-gradient-to-b from-primary/10 to-background relative overflow-hidden">
-          {/* Matrix Dots Background */}
-          <div className="absolute inset-0 matrix-dots opacity-20"></div>
+        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+          {/* Image Background */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
+            <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+          </div>
+          
+          {/* Darker overlay for text readability */}
+          <div className="absolute inset-0 bg-black/40 z-10"></div>
 
-          <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4">
+          {/* Content */}
+          <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
               Shop <span className="text-gradient">Thrive</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
               Premium wellness products designed for those who demand more from life.
             </p>
           </div>
@@ -100,8 +108,8 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
         <section className="py-12">
           <div className="container mx-auto px-4 lg:px-8">
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
-              {/* Search */}
+            <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center">
+              {/* Search - Left side */}
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -112,34 +120,37 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
                 />
               </div>
 
-              {/* Category Filter */}
-              <div className="flex gap-2 flex-wrap">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className="rounded-full"
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
+              {/* Filters - Right side */}
+              <div className="flex gap-2 flex-wrap items-center ml-auto">
+                {/* Category Filter */}
+                <div className="flex gap-2 flex-wrap">
+                  {categories.map((category) => (
+                    <Button
+                      key={category}
+                      variant={selectedCategory === category ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category)}
+                      className="rounded-full"
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
 
-              {/* Sort */}
-              <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
-                <SelectTrigger className="w-[180px]">
-                  <ArrowUpDown className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                  <SelectItem value="price-asc">Price (Low-High)</SelectItem>
-                  <SelectItem value="price-desc">Price (High-Low)</SelectItem>
-                </SelectContent>
-              </Select>
+                {/* Sort */}
+                <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                    <SelectItem value="price-asc">Price (Low-High)</SelectItem>
+                    <SelectItem value="price-desc">Price (High-Low)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Results Count */}
@@ -251,10 +262,9 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
             key={product.image}
             src={product.image.replace(/^public\//, '/')}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = 'none';
-              e.currentTarget.nextElementSibling?.classList.remove('hidden');
             }}
           />
         ) : null}
@@ -268,6 +278,14 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
             {product.groupName.charAt(0)}
           </div>
         </div>
+        {/* No Image Overlay */}
+        {!product.image && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+            <div className="text-6xl font-display font-bold text-gray-300">
+              {product.groupName.charAt(0)}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Gradient Overlay for Text Readability */}
@@ -283,10 +301,9 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
         </span>
       </div>
 
-      {/* Product Info Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col z-20 text-white">
-        <p className="text-xs text-white/70 mb-1 font-medium tracking-wide">SKU: {product.sku}</p>
-        <h3 className="font-display text-2xl font-bold mb-3 line-clamp-2 tracking-wide leading-tight shadow-black/50 drop-shadow-md">
+            {/* Product Info Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col z-20 text-white">
+                <h3 className="font-display text-2xl font-bold mb-3 line-clamp-2 tracking-wide leading-tight shadow-black/50 drop-shadow-md">
           <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
             {product.groupName}
           </Link>

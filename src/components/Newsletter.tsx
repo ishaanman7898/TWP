@@ -19,7 +19,7 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
+    <section className="py-32 bg-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-glacier/5 to-primary/10" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-glacier/10 rounded-full blur-3xl" />
@@ -50,7 +50,7 @@ export function Newsletter() {
               type="submit" 
               variant="hero" 
               size="lg" 
-              className="rounded-full"
+              className="rounded-full h-12 px-8"
               disabled={isSubmitted}
             >
               {isSubmitted ? (
