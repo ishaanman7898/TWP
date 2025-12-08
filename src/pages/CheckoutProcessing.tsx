@@ -25,6 +25,63 @@ export default function CheckoutProcessing() {
     const companyCode = cart[0]?.link.match(/buybuttons\/([a-z0-9]+)\//i)?.[1] || "";
     const manualFinalCartUrl = companyCode ? `https://portal.veinternational.org/buybuttons/${companyCode}/cart/` : "";
 
+    const startPopupCheckout = async () => {
+        try {
+            const items = cart.flatMap(item =>
+                Array((item.quantity || 1)).fill({ name: item.name, url: item.link })
+            );
+
+            if (items.length === 0) {
+                navigate("/cart");
+                return;
+            }
+
+            setProgress({ processed: 0, total: items.length });
+
+            const width = 703;
+            const height = 760;
+            const left = 1016;
+            const top = 184;
+            const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=yes,status=no`;
+
+            const firstUrl = `${items[0].url}?nocache=${Date.now()}`;
+            const popup = window.open(firstUrl, "vei_checkout_window", features);
+
+            if (!popup || popup.closed) {
+                setStatus("manual");
+                return;
+            }
+
+            for (let i = 0; i < items.length; i++) {
+                if (i > 0) {
+                    try {
+                        popup.location.href = `${items[i].url}?nocache=${Date.now() + i}`;
+                    } catch {}
+                }
+                await new Promise(r => setTimeout(r, 700));
+                if (popup.closed) {
+                    setStatus("manual");
+                    return;
+                }
+                setProgress({ processed: i + 1, total: items.length });
+            }
+
+            if (manualFinalCartUrl) {
+                try {
+                    popup.location.href = manualFinalCartUrl;
+                } catch {
+                    window.open(manualFinalCartUrl, "_blank");
+                }
+                setFinalCartUrl(manualFinalCartUrl);
+            }
+
+            setStatus("complete");
+            clearCart();
+        } catch (error) {
+            setStatus("error");
+        }
+    };
+
     const startCheckout = async () => {
         try {
             // Flatten cart items based on quantity
@@ -67,7 +124,7 @@ export default function CheckoutProcessing() {
         }
 
         if (cart.length > 0 && !sessionId) {
-            startCheckout();
+            startPopupCheckout();
         }
     }, [cart, navigate, sessionId, CART_SERVER_URL]);
 
