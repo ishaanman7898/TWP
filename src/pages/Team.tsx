@@ -106,7 +106,7 @@ const teamMembers = [
   },
   {
     name: "Ishaan Manoor",
-    role: "Account Manager",
+    role: "Sales Person",
     image: "/team/IshaanManoor.png",
     bio: "Managing client relationships and ensuring customer satisfaction.",
     department: "Sales"
@@ -224,14 +224,22 @@ export default function Team() {
         const updateInHero = () => {
           if (!heroSection) return;
           const rect = heroSection.getBoundingClientRect();
-          isInHero = rect.top < window.innerHeight && rect.bottom > 0;
+          // Only spawn trails while hero section is visible (scrolling within it)
+          isInHero = rect.top <= 0 && rect.bottom > 0;
+          // Clear all trail images when leaving hero section
+          if (!isInHero) {
+            gsapInstance.set(images, { opacity: 0, clearProps: "all" });
+          }
         };
         updateInHero();
         onScroll = () => updateInHero();
         window.addEventListener("scroll", onScroll, { passive: true });
 
         onMove = (e: MouseEvent) => {
-          mousePos = { x: e.clientX, y: e.clientY };
+          // Only track mouse position when in hero section
+          if (isInHero) {
+            mousePos = { x: e.clientX, y: e.clientY };
+          }
         };
         window.addEventListener("mousemove", onMove);
 
@@ -387,7 +395,7 @@ export default function Team() {
                       key={member.name}
                       className="glass rounded-xl p-6 border border-border text-center"
                     >
-                      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-glacier/30 to-primary/30 mx-auto mb-6 flex items-center justify-center overflow-hidden">
+                      <div className="w-40 h-40 rounded-full bg-gradient-to-br from-glacier/30 to-primary/30 mx-auto mb-6 flex items-center justify-center overflow-hidden">
                         <img
                           src={member.image}
                           alt={member.name}
@@ -404,21 +412,6 @@ export default function Team() {
                 </div>
               </section>
             ))}
-
-            {/* Join Us CTA */}
-            <div className="mt-4 glass rounded-xl p-8 border border-border text-center">
-              <h2 className="font-display text-2xl font-bold mb-4">Join Our Team</h2>
-              <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                Interested in being part of Thrive? We're always looking for passionate individuals
-                to join our Virtual Enterprise team.
-              </p>
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 text-glacier hover:underline font-medium"
-              >
-                Get in touch →
-              </a>
-            </div>
           </div>
         </div>
       </main>

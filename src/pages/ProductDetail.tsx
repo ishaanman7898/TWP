@@ -97,176 +97,199 @@ export default function ProductDetail() {
   const groupDescription = `Discover ${selected.groupName} — premium quality designed to elevate your routine. Choose your ${category === "Wellness" ? "flavor" : "color"} and enjoy exceptional performance.`;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
       <Navbar />
 
-      <div className="relative">
-        <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
-
-      <section className="pt-48 pb-12 relative">
+      {/* Hero Section with Product Image */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-gradient-to-b from-slate-900 via-black to-black">
+        <div className="absolute inset-0 matrix-dots opacity-3" aria-hidden="true"></div>
+        
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          {/* Breadcrumbs */}
-          <div className="text-sm text-muted-foreground mb-6">
-            <Link to="/shop" className="hover:underline">Shop</Link>
-            <span className="mx-2">/</span>
-            <span className="text-foreground">{selected.groupName}</span>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12">
-            {/* Gallery */}
-            <div className={cn("relative rounded-2xl border border-border p-6", getCategoryBg(category))}>
-              {selected.image ? (
-                <img src={selected.image} alt={selected.name} className="w-full h-[420px] object-contain" />
-              ) : (
-                <div className="h-[420px] flex items-center justify-center text-7xl font-display text-foreground/10">
-                  {selected.groupName.charAt(0)}
-                </div>
-              )}
-              <span className={cn("absolute top-4 left-4 px-2 py-1 rounded-full text-xs font-medium", getCategoryColor(category))}>
-                {category}
-              </span>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Product Image - Left Side */}
+            <div className="flex items-center justify-center min-h-[500px]">
+              <div className="relative w-full max-w-md">
+                {selected.image ? (
+                  <img 
+                    src={selected.image?.replace(/^public\//, '/')} 
+                    alt={selected.name} 
+                    className="w-full h-auto object-contain drop-shadow-2xl"
+                  />
+                ) : (
+                  <div className="h-[500px] flex items-center justify-center text-9xl font-display text-white/10">
+                    {selected.groupName.charAt(0)}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Info */}
-            <div>
-              <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-[0.02em] text-foreground mb-4">
-                {selected.groupName}
-              </h1>
-              
-              {/* About section - show below title if no variants */}
-              {variants.length === 1 && (
-                <div className="mb-8">
-                  <h2 className="font-display text-xl md:text-2xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
-                  <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
-                </div>
-              )}
-
-              {variants.length > 1 && (
-                <p className="text-muted-foreground mb-8">Choose your preferred option and add to cart.</p>
-              )}
-
-              {variants.length > 1 && (
-                <div className="flex items-center gap-4 mb-6">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {category === "Wellness" ? "Flavor" : "Color"}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {variants.map(v => (
-                        <button
-                          key={v.id}
-                          onClick={() => setSelected(v)}
-                          className={cn(
-                            "w-8 h-8 rounded-full border border-border transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50",
-                            selected.id === v.id && "ring-2 ring-primary scale-110",
-                            v.hexColor === "#FFFFFF" && "bg-white"
-                          )}
-                          style={{ backgroundColor: v.hexColor }}
-                          title={v.color}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-xs text-muted-foreground">SKU: {selected.sku}</p>
-                  {selected.color && (
-                    <p className="text-xs text-muted-foreground">
-                      {category === "Wellness" ? "Flavor" : "Color"}: <span className="font-medium text-foreground">{selected.color}</span>
-                    </p>
-                  )}
-                </div>
+            {/* Product Info - Right Side */}
+            <div className="flex flex-col justify-center space-y-8">
+              {/* Breadcrumbs */}
+              <div className="text-sm text-white/60">
+                <Link to="/shop/water-bottles" className="hover:text-white transition">Water Bottles</Link>
+                <span className="mx-2">/</span>
+                <span className="text-white">{selected.groupName}</span>
               </div>
 
-              {/* Quantity Selector */}
-              <div className="mb-6">
-                <p className="text-sm font-medium mb-2">Quantity</p>
-                <div className="flex items-center gap-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="h-10 w-10 p-0 rounded-full"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <div className="w-20 text-center font-medium text-lg">
-                    {quantity}
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                    className="h-10 w-10 p-0 rounded-full"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+              {/* Title */}
+              <div>
+                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+                  {selected.groupName}
+                </h1>
+                <p className="text-xl text-white/70 font-light leading-relaxed max-w-lg">
+                  Premium insulated water bottle engineered with advanced thermal technology. Keep your drinks at the perfect temperature for hours.
+                </p>
               </div>
 
               {/* Price */}
-              <div className="mb-6">
-                <span className="text-3xl md:text-4xl font-display font-bold text-foreground">${selected.price.toFixed(2)}</span>
+              <div className="text-5xl font-bold">
+                ${selected.price.toFixed(2)}
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Button onClick={handleAddToCart} className="rounded-full">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add {quantity > 1 ? `${quantity}x ` : ''}to Cart
+              {/* Color Variants */}
+              {variants.length > 1 && (
+                <div className="space-y-3">
+                  <p className="text-sm text-white/60 uppercase tracking-widest font-medium">
+                    Available Colors
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {variants.map((variant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => setSelected(variant)}
+                        className={cn(
+                          "w-12 h-12 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
+                          selected.id === variant.id
+                            ? "border-white scale-110"
+                            : "border-white/30 hover:border-white/60",
+                          variant.hexColor === "#FFFFFF" && "bg-white border-white"
+                        )}
+                        style={{
+                          backgroundColor: variant.hexColor !== "#FFFFFF" ? variant.hexColor : undefined
+                        }}
+                        title={variant.color}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity and Add to Cart */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full p-2 border border-white/20 w-fit">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span className="w-8 text-center font-medium">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="bg-white text-black hover:bg-white/90 font-bold text-lg rounded-full px-8 h-12 transition-all duration-300"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Buy
                 </Button>
-                <Button asChild variant="secondary" className="rounded-full">
-                  <a href={selected.buyLink} target="_blank" rel="noopener noreferrer">Buy Now Direct</a>
-                </Button>
-                <Button variant="outline" className="rounded-full" asChild>
-                  <Link to="/shop">Continue Shopping</Link>
-                </Button>
+              </div>
+
+              {/* Features */}
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10">
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Capacity</p>
+                  <p className="text-lg font-semibold">
+                    {selected.groupName.includes("Glacier") ? "40 oz" : "32 oz"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Material</p>
+                  <p className="text-lg font-semibold">Stainless Steel</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Insulation</p>
+                  <p className="text-lg font-semibold">Double-Wall</p>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Warranty</p>
+                  <p className="text-lg font-semibold">Lifetime</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Description Section - Show at bottom if variants exist */}
-      {variants.length > 1 && (
-        <section className="pb-16">
-          <div className="container mx-auto px-4 lg:px-8 relative z-10">
-            <div className="max-w-3xl">
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 tracking-[0.02em]">About this product</h2>
-              <p className="text-muted-foreground leading-relaxed">{groupDescription}</p>
+      {/* Description Section */}
+      <section className="py-20 bg-slate-950">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 tracking-tight">About {selected.groupName}</h2>
+            <p className="text-lg text-white/70 font-light leading-relaxed">{groupDescription}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Specifications Section */}
+      <section className="py-20 bg-black">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-12 tracking-tight">Specifications</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <p className="text-sm text-white/60 uppercase tracking-widest mb-3">Capacity</p>
+              <p className="text-2xl font-bold">{selected.groupName.includes("Glacier") ? "40 oz" : "32 oz"}</p>
+            </div>
+            <div>
+              <p className="text-sm text-white/60 uppercase tracking-widest mb-3">Material</p>
+              <p className="text-2xl font-bold">Stainless Steel</p>
+            </div>
+            <div>
+              <p className="text-sm text-white/60 uppercase tracking-widest mb-3">Insulation</p>
+              <p className="text-2xl font-bold">Double-Wall</p>
+            </div>
+            <div>
+              <p className="text-sm text-white/60 uppercase tracking-widest mb-3">Warranty</p>
+              <p className="text-2xl font-bold">Lifetime</p>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Related Products */}
-      <section className="pb-20">
+      <section className="py-20 bg-slate-950">
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <h3 className="font-display text-xl md:text-2xl font-bold mb-6 tracking-[0.02em]">Related Products</h3>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-12 tracking-tight">Explore More Water Bottles</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {sourceProducts
               .filter(p => p.category === category && p.groupName !== selected.groupName)
               .slice(0, 4)
               .map((p, i) => (
-                <Link key={`${p.id}-${i}`} to={`/product/${slugify(p.groupName)}`} className="group block rounded-xl border border-border p-4 hover:border-primary/50 transition">
-                  <div className="aspect-square bg-muted rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                <Link key={`${p.id}-${i}`} to={`/product/${slugify(p.groupName)}`} className="group block">
+                  <div className="aspect-square bg-black rounded-lg mb-4 flex items-center justify-center overflow-hidden border border-white/10 group-hover:border-white/30 transition">
                     {p.image ? (
-                      <img src={p.image} alt={p.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                      <img src={p.image?.replace(/^public\//, '/')} alt={p.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <div className="text-5xl font-display text-foreground/10">{p.groupName.charAt(0)}</div>
+                      <div className="text-6xl font-display text-white/10">{p.groupName.charAt(0)}</div>
                     )}
                   </div>
-                  <div className="font-display font-bold tracking-[0.02em]">{p.groupName}</div>
-                  <div className="text-muted-foreground text-sm">${p.price.toFixed(2)}</div>
+                  <div className="font-display font-bold text-white tracking-tight mb-1">{p.groupName}</div>
+                  <div className="text-white/70 text-sm">${p.price.toFixed(2)}</div>
                 </Link>
               ))}
           </div>
         </div>
       </section>
-
-      </div>
 
       <Footer />
     </div>
