@@ -5,6 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Base path for GitHub Pages project site: https://ishaanman7898.github.io/ve-wellness-blue/
+  base: "/ve-wellness-blue/",
   server: {
     host: "::",
     port: 8080,
