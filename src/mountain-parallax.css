@@ -1,0 +1,99 @@
+/* Simple parallax demo scoped to .mountain-page-root */
+
+.mountain-page-root {
+  min-height: 100vh;
+  background-color: #020617;
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.mountain-main {
+  min-height: 100vh;
+}
+
+.mountain-hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.mountain-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url("/mountainbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform;
+  z-index: -2;
+}
+
+.mountain-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(15,23,42,0.4), rgba(15,23,42,0.95));
+  z-index: -1;
+}
+
+.mountain-fg-wrap {
+  position: relative;
+  width: 100vw;
+  margin: 0;
+  padding-top: 25vh;
+  transform: translate3d(0, var(--mountain-parallax-y, 0px), 0);
+  transition: transform 0.03s linear;
+}
+
+.mountain-fg-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+.mountain-heading {
+  position: absolute;
+  inset-inline: 0;
+  top: 12vh;
+  text-align: center;
+  padding-inline: 1.5rem;
+}
+
+.mountain-heading h1 {
+  font-size: clamp(3rem, 6vw, 4.75rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.mountain-heading p {
+  margin-top: 0.75rem;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+  color: rgba(226,232,240,0.75);
+}
+
+.mountain-content {
+  position: relative;
+  padding: 5rem 1.5rem 6rem;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.mountain-content h2 {
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(148,163,184,0.95);
+}
+
+.mountain-content p {
+  margin-top: 1.5rem;
+  line-height: 1.8;
+  color: rgba(226,232,240,0.84);
+}
+
+.mountain-spacer {
+  height: 120vh;
+}
