@@ -5,15 +5,15 @@ import { useCart } from "@/contexts/CartContext";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function FloatingCart() {
-    const { cart, removeFromCart, clearCart } = useCart();
+    const { cart, removeFromCart, clearCart, totalPrice } = useCart();
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Hide cart on home page
-    const shouldShowCart = location.pathname !== '/';
+    // Only show cart on Shop pages (all products dropdown items) and Product Detail pages
+    const shouldShowCart = location.pathname.startsWith('/shop') || location.pathname.startsWith('/product/');
 
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
+
 
     // Don't render if we're on home page
     if (!shouldShowCart) {
@@ -81,9 +81,16 @@ export function FloatingCart() {
                                                 )}
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium text-sm sm:text-base line-clamp-2">{item.name}</p>
-                                                    {item.price && (
-                                                        <p className="text-sm sm:text-base text-glacier font-bold mt-1">${item.price.toFixed(2)}</p>
-                                                    )}
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-xs font-bold bg-white/10 px-2 py-0.5 rounded text-white/80">
+                                                            Qty: {item.quantity || 1}
+                                                        </span>
+                                                        {item.price && (
+                                                            <p className="text-sm sm:text-base text-glacier font-bold">
+                                                                ${((item.price) * (item.quantity || 1)).toFixed(2)}
+                                                            </p>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <button
                                                     className="text-muted-foreground hover:text-destructive transition-colors p-2"
@@ -100,7 +107,7 @@ export function FloatingCart() {
                                     <div className="p-4 sm:p-6 border-t border-border space-y-4 flex-shrink-0 bg-card">
                                         {totalPrice > 0 && (
                                             <div className="flex items-center justify-between text-xl sm:text-2xl font-bold">
-                                                <span>Total:</span>
+                                                <span>Subtotal:</span>
                                                 <span className="text-glacier">${totalPrice.toFixed(2)}</span>
                                             </div>
                                         )}

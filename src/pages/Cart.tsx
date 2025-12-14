@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -6,8 +7,25 @@ import { useCart } from "@/contexts/CartContext";
 import { Trash2, ShoppingBag } from "lucide-react";
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, addToCart } = useCart();
   const navigate = useNavigate();
+  const [shippingMethod, setShippingMethod] = useState<'standard' | 'express'>('standard');
+
+  const handleCheckout = () => {
+    // If express shipping is selected, add the express shipping "product" to the cart
+    if (shippingMethod === 'express') {
+      addToCart({
+        name: "Express Shipping",
+        link: "https://portal.veinternational.org/buybuttons/us019814/btn/express-shipping-expr/",
+        price: 10.00,
+        image: "", // No image for shipping
+        quantity: 1
+      }, 1);
+    }
+
+    // Proceed to checkout page
+    navigate("/checkout-processing");
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -113,29 +131,43 @@ export default function Cart() {
                       <span>Subtotal ({totalItems} items)</span>
                       <span>${totalPrice.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-muted-foreground">
-                      <span>Shipping</span>
-                      <span>Calculated at checkout</span>
+
+                    {/* Shipping Selection */}
+                    <div className="space-y-2 pt-2">
+                      <label className="text-sm font-medium">Shipping Method</label>
+                      <select
+                        className="w-full bg-background border border-border rounded-lg p-2 text-sm"
+                        value={shippingMethod}
+                        onChange={(e) => setShippingMethod(e.target.value as 'standard' | 'express')}
+                      >
+                        <option value="standard">Standard Shipping (Free)</option>
+                        <option value="express">Express Shipping (+$10.00)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex justify-between text-muted-foreground pt-2">
+                      <span>Shipping Cost</span>
+                      <span>{shippingMethod === 'express' ? '$10.00' : 'Free'}</span>
                     </div>
                   </div>
 
                   <div className="border-t border-border pt-4 mb-6">
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                      <span className="text-primary">${(totalPrice + (shippingMethod === 'express' ? 10 : 0)).toFixed(2)}</span>
                     </div>
                   </div>
 
                   <Button
                     variant="hero"
                     className="w-full rounded-full"
-                    onClick={() => navigate("/checkout-processing")}
+                    onClick={handleCheckout}
                   >
                     Proceed to Checkout
                   </Button>
 
                   <p className="text-center text-xs text-muted-foreground mt-4">
-                    Taxes and shipping calculated at checkout
+                    Taxes calculated at checkout
                   </p>
                 </div>
               </div>
