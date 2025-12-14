@@ -47,7 +47,6 @@ export default function SupplementsPage() {
                     {/* Darker overlay for text readability */}
                     <div className="absolute inset-0 bg-black/40 z-10"></div>
 
-                    {/* Content */}
                     <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
                         <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
                             <span className="text-gradient">Supplements</span>

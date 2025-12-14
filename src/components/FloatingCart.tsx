@@ -108,7 +108,7 @@ export function FloatingCart() {
                                             <Button variant="outline" size="default" onClick={clearCart} className="flex-1">
                                                 Clear
                                             </Button>
-                                            <Button onClick={() => { setIsOpen(false); navigate("/checkout-processing"); }} className="flex-1 rounded-full" size="default">
+                                            <Button onClick={() => { setIsOpen(false); navigate("/cart"); }} className="flex-1 rounded-full" size="default">
                                                 <Check className="w-4 h-4 mr-2" />
                                                 Checkout
                                             </Button>

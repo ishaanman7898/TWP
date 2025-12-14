@@ -62,7 +62,7 @@ export function ProductLineSection({
         "relative min-h-screen flex items-center justify-center overflow-hidden py-12 md:py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950"
       )}
     >
-      <div className="absolute inset-0 matrix-dots opacity-3" aria-hidden="true" />
+
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div
@@ -116,6 +116,36 @@ export function ProductLineSection({
                 ${selectedVariant.price.toFixed(2)}
               </div>
 
+              {/* Quantity and Add to Cart */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-start items-start">
+                <div className="flex items-center justify-between gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 sm:px-5 border border-white/20 h-12 w-full sm:w-auto">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="w-5 h-5" />
+                  </button>
+                  <span className="w-8 text-center font-medium">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="bg-white text-black hover:bg-white/90 font-bold text-lg rounded-full px-8 h-12 min-w-[180px] transition-all duration-300"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Add to Cart
+                </Button>
+              </div>
+
               {/* Variants */}
               {displayVariants.length > 1 && (
                 <div className="space-y-3">
@@ -145,35 +175,7 @@ export function ProductLineSection({
                 </div>
               )}
 
-              {/* Quantity and Add to Cart */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 pt-6">
-                <div className="flex items-center justify-between gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 sm:px-5 border border-white/20 h-12 w-full sm:w-auto">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <span className="w-8 text-center font-medium">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
 
-                <Button
-                  size="lg"
-                  className="bg-white text-black hover:bg-white/90 font-bold text-lg rounded-full px-8 h-12 min-w-[180px] transition-all duration-300"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Add to Cart
-                </Button>
-              </div>
 
               {/* Generic specs */}
               <div className="pt-6 border-t border-white/10">
