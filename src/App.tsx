@@ -23,7 +23,7 @@ import Privacy from "./pages/Privacy";
 import WaterBottles from "./pages/WaterBottles";
 import Electrolytes from "./pages/Electrolytes";
 import Supplements from "./pages/Supplements";
-import Accessories from "./pages/Accessories";
+
 import Bundles from "./pages/Bundles";
 import Cart from "./pages/Cart";
 import CheckoutLoading from "./pages/CheckoutLoading";
@@ -56,7 +56,7 @@ const App = () => (
             <Route path="/shop/water-bottles" element={<WaterBottles />} />
             <Route path="/shop/electrolytes" element={<Electrolytes />} />
             <Route path="/shop/supplements" element={<Supplements />} />
-            <Route path="/shop/accessories" element={<Accessories />} />
+
             <Route path="/shop/bundles" element={<Bundles />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart-test" element={<CartTest />} />

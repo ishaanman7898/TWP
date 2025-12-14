@@ -5,9 +5,10 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { products, Product } from "@/data/products";
 import { useProductsCsv } from "@/hooks/useProductsCsv";
-import { ShoppingCart, ChevronDown } from "lucide-react";
+import { ShoppingCart, ChevronDown, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+
 
 export default function WaterBottlesPage() {
     const { addToCart } = useCart();
@@ -39,7 +40,7 @@ export default function WaterBottlesPage() {
             {/* Hero Section - Apple Style */}
             <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-black to-black z-0"></div>
-                <div className="absolute inset-0 matrix-dots opacity-5" aria-hidden="true"></div>
+
 
                 <div className="relative z-10 text-center px-4">
                     <h1 className="font-display text-6xl md:text-8xl font-bold mb-6 tracking-tight">
@@ -153,7 +154,7 @@ function AppleProductSection({ products: variants, index, addToCart, sectionId }
         <section id={sectionId} className={cn(
             "relative min-h-screen flex items-center justify-center overflow-hidden py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950"
         )}>
-            <div className="absolute inset-0 matrix-dots opacity-3" aria-hidden="true"></div>
+
 
             <div className="container mx-auto px-4 lg:px-8 relative z-10">
                 <div className={cn(
@@ -235,7 +236,7 @@ function AppleProductSection({ products: variants, index, addToCart, sectionId }
                                         className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                                         aria-label="Decrease quantity"
                                     >
-                                        −
+                                        <Minus className="w-5 h-5" />
                                     </button>
                                     <span className="w-8 text-center font-medium">{quantity}</span>
                                     <button
@@ -243,7 +244,7 @@ function AppleProductSection({ products: variants, index, addToCart, sectionId }
                                         className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                                         aria-label="Increase quantity"
                                     >
-                                        +
+                                        <Plus className="w-5 h-5" />
                                     </button>
                                 </div>
 

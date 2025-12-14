@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { ProductLineSection } from "@/components/ProductLineSection";
 
+
 export default function SupplementsPage() {
     const { addToCart } = useCart();
     const { products: csvProducts } = useProductsCsv();
@@ -34,81 +35,81 @@ export default function SupplementsPage() {
         <div className="min-h-screen bg-black text-white">
             <Navbar />
             <div className="relative">
-            <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-                {/* Image Background */}
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-purple-500/20 to-background"></div>
-                    <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
-                </div>
-                
-                {/* Darker overlay for text readability */}
-                <div className="absolute inset-0 bg-black/40 z-10"></div>
-
-                {/* Content */}
-                <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
-                    <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-                        <span className="text-gradient">Supplements</span>
-                    </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
-                        Premium protein powders and nutritional supplements to fuel your fitness journey.
-                    </p>
-                </div>
-
-                <button
-                    type="button"
-                    aria-label="Scroll down"
-                    onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
-                    className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
-                >
-                    <ChevronDown className="w-8 h-8 text-white/80" />
-                </button>
-            </section>
-
-            {/* Overview / quick navigation divider */}
-            <section className="border-y border-white/10 bg-gradient-to-r from-slate-950/60 via-black to-slate-950/60 py-10">
-                <div className="container mx-auto px-4 lg:px-8 flex flex-col gap-6 items-center">
-                    <p className="text-sm uppercase tracking-[0.25em] text-white/50">
-                        Explore the supplements
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3">
-                        {groupedProducts.map((group) => {
-                            const label = group[0].groupName;
-                            const sectionId = label.toLowerCase().replace(/\s+/g, "-");
-                            return (
-                                <a
-                                    key={label}
-                                    href={`#${sectionId}`}
-                                    className="px-4 py-2 rounded-full border border-white/15 bg-white/5 text-sm text-white/80 hover:bg-white/15 hover:border-white/40 transition-colors"
-                                >
-                                    {label}
-                                </a>
-                            );
-                        })}
+                <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
+                    {/* Image Background */}
+                    <div className="absolute inset-0 z-0">
+                        <div className="absolute inset-0 bg-gradient-to-b from-purple-500/20 to-background"></div>
                     </div>
-                </div>
-            </section>
 
-            {/* Product Showcase Sections */}
-            <div className="relative">
-                {groupedProducts.map((group, index) => {
-                    const sectionId = group[0].groupName.toLowerCase().replace(/\s+/g, "-");
-                    const isLast = index === groupedProducts.length - 1;
-                    return (
-                        <div key={group[0].groupName}>
-                            <ProductLineSection
-                                variants={group}
-                                index={index}
-                                addToCart={addToCart}
-                                sectionId={sectionId}
-                                lineDescription="Premium protein and supplement formulas designed to support recovery and performance."
-                            />
-                            {!isLast && (
-                                <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                            )}
+
+                    {/* Darker overlay for text readability */}
+                    <div className="absolute inset-0 bg-black/40 z-10"></div>
+
+                    {/* Content */}
+                    <div className="container mx-auto px-4 lg:px-8 text-center relative z-20">
+                        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+                            <span className="text-gradient">Supplements</span>
+                        </h1>
+                        <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
+                            Premium protein powders and nutritional supplements to fuel your fitness journey.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        aria-label="Scroll down"
+                        onClick={() => window.scrollTo({ behavior: 'smooth', top: window.innerHeight })}
+                        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-30 hover:opacity-90 focus:outline-none"
+                    >
+                        <ChevronDown className="w-8 h-8 text-white/80" />
+                    </button>
+                </section>
+
+                {/* Overview / quick navigation divider */}
+                <section className="border-y border-white/10 bg-gradient-to-r from-slate-950/60 via-black to-slate-950/60 py-10">
+                    <div className="container mx-auto px-4 lg:px-8 flex flex-col gap-6 items-center">
+                        <p className="text-sm uppercase tracking-[0.25em] text-white/50">
+                            Explore the supplements
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3">
+                            {groupedProducts.map((group) => {
+                                const label = group[0].groupName;
+                                const sectionId = label.toLowerCase().replace(/\s+/g, "-");
+                                return (
+                                    <a
+                                        key={label}
+                                        href={`#${sectionId}`}
+                                        className="px-4 py-2 rounded-full border border-white/15 bg-white/5 text-sm text-white/80 hover:bg-white/15 hover:border-white/40 transition-colors"
+                                    >
+                                        {label}
+                                    </a>
+                                );
+                            })}
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
+                </section>
+
+                {/* Product Showcase Sections */}
+                <div className="relative">
+                    {groupedProducts.map((group, index) => {
+                        const sectionId = group[0].groupName.toLowerCase().replace(/\s+/g, "-");
+                        const isLast = index === groupedProducts.length - 1;
+                        return (
+                            <div key={group[0].groupName}>
+                                <ProductLineSection
+                                    variants={group}
+                                    index={index}
+                                    addToCart={addToCart}
+                                    sectionId={sectionId}
+                                    lineDescription="Premium protein and supplement formulas designed to support recovery and performance."
+                                />
+                                {!isLast && (
+                                    <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
             <Footer />
         </div>

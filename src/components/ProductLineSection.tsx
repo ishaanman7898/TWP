@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/data/products";
 
@@ -153,7 +153,7 @@ export function ProductLineSection({
                     className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                     aria-label="Decrease quantity"
                   >
-                    −
+                    <Minus className="w-5 h-5" />
                   </button>
                   <span className="w-8 text-center font-medium">{quantity}</span>
                   <button
@@ -161,7 +161,7 @@ export function ProductLineSection({
                     className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                     aria-label="Increase quantity"
                   >
-                    +
+                    <Plus className="w-5 h-5" />
                   </button>
                 </div>
 

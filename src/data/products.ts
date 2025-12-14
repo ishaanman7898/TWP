@@ -274,4 +274,4 @@ export const products: Product[] = [
   }
 ];
 
-export const categories = ["All", "Wellness", "Water Bottles", "Bundles", "Accessories"];
+export const categories = ["All", "Wellness", "Water Bottles", "Bundles"];

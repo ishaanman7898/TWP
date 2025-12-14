@@ -102,17 +102,17 @@ export default function ProductDetail() {
 
       {/* Hero Section with Product Image */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-gradient-to-b from-slate-900 via-black to-black">
-        <div className="absolute inset-0 matrix-dots opacity-3" aria-hidden="true"></div>
-        
+
+
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Product Image - Left Side */}
             <div className="flex items-center justify-center min-h-[500px]">
               <div className="relative w-full max-w-md">
                 {selected.image ? (
-                  <img 
-                    src={selected.image?.replace(/^public\//, '/')} 
-                    alt={selected.name} 
+                  <img
+                    src={selected.image?.replace(/^public\//, '/')}
+                    alt={selected.name}
                     className="w-full h-auto object-contain drop-shadow-2xl"
                   />
                 ) : (

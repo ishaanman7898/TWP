@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { products, categories, Product } from "@/data/products";
 import { useProductsCsv } from "@/hooks/useProductsCsv";
-import { Search, ShoppingBag, ArrowUpDown, ShoppingCart, ChevronDown } from "lucide-react";
+import { Search, ShoppingBag, ArrowUpDown, ShoppingCart, ChevronDown, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+
 
 type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc";
 
@@ -42,11 +43,12 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = sourceProducts.filter((product) => {
+      const isVisible = product.category !== "Subscriptions" && product.status !== "Removal Requested";
       const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.groupName.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      return matchesCategory && matchesSearch;
+
+      return isVisible && matchesCategory && matchesSearch;
     });
 
     return filtered.sort((a, b) => {
@@ -84,16 +86,15 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
       <Navbar />
 
       <div className="relative">
-        <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
+
 
         {/* Hero Section */}
         <section className="relative h-screen flex items-center justify-center overflow-hidden">
           {/* Image Background */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-background"></div>
-            <div className="absolute inset-0 matrix-dots opacity-10" aria-hidden="true"></div>
           </div>
-          
+
           {/* Darker overlay for text readability */}
           <div className="absolute inset-0 bg-black/40 z-10"></div>
 
@@ -231,21 +232,6 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
     }
   };
 
-  const getCategoryBg = (category: string) => {
-    switch (category) {
-      case "Wellness":
-        return "bg-emerald-500/5";
-      case "Water Bottles":
-        return "bg-sky-500/5";
-      case "Bundles":
-        return "bg-orange-500/5";
-      case "Accessories":
-        return "bg-purple-500/5";
-      default:
-        return "bg-primary/5";
-    }
-  };
-
   const slugify = (text: string) =>
     text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 
@@ -316,9 +302,9 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
         </span>
       </div>
 
-            {/* Product Info Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col z-20 text-white">
-                <h3 className="font-display text-2xl font-bold mb-3 line-clamp-2 tracking-wide leading-tight shadow-black/50 drop-shadow-md">
+      {/* Product Info Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col z-20 text-white">
+        <h3 className="font-display text-2xl font-bold mb-3 line-clamp-2 tracking-wide leading-tight shadow-black/50 drop-shadow-md">
           <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
             {product.groupName}
           </Link>
@@ -357,7 +343,7 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
                 className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 hover:scale-110 flex items-center justify-center text-sm font-bold transition-all duration-200"
                 aria-label="Decrease quantity"
               >
-                −
+                <Minus className="w-4 h-4" />
               </button>
               <span className="w-8 text-center font-medium text-sm">{quantity}</span>
               <button
@@ -365,7 +351,7 @@ function ProductCard({ variants, index }: { variants: Product[]; index: number }
                 className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 hover:scale-110 flex items-center justify-center text-sm font-bold transition-all duration-200"
                 aria-label="Increase quantity"
               >
-                +
+                <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>

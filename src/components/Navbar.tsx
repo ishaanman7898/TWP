@@ -14,7 +14,7 @@ const navLinks = [
       { label: "Water Bottles", href: "/shop/water-bottles" },
       { label: "Electrolytes", href: "/shop/electrolytes" },
       { label: "Supplements", href: "/shop/supplements" },
-      { label: "Accessories", href: "/shop/accessories" },
+
       { label: "Bundles", href: "/shop/bundles" },
       { label: "All Products", href: "/shop" },
     ]

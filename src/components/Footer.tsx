@@ -13,7 +13,7 @@ const footerLinks = {
     { label: "Water Bottles", href: "/shop/water-bottles" },
     { label: "Electrolytes", href: "/shop/electrolytes" },
     { label: "Supplements", href: "/shop/supplements" },
-    { label: "Accessories", href: "/shop/accessories" },
+
     { label: "Bundles", href: "/shop/bundles" },
   ],
   company: [
@@ -139,7 +139,7 @@ export function Footer() {
               Disclaimer: This Virtual Enterprise online store is for educational purposes only (Thrive 2025-2026)
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
-              Version 1.4.0
+              v1.5.0 - Dev Push
             </p>
           </div>
         </div>

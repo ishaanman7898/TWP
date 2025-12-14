@@ -5,6 +5,7 @@ import { useState } from "react";
 import WaveMarquee from "@/components/WaveMarquee";
 import { ChevronDown } from "lucide-react";
 import { HeroProductSlideshow } from "@/components/HeroProductSlideshow";
+import { FlippingText } from "@/components/FlippingText";
 
 const thriveFactors = [
   {
@@ -38,8 +39,8 @@ const Index = () => {
       <Hero />
 
       {/* Tagline Section - Navy split layout */}
-      <section id="tagline" className="relative bg-black py-16 md:py-24">
-        <div className="absolute inset-0 matrix-dots opacity-30" aria-hidden="true" />
+      <section id="tagline" className="relative bg-[#020410] py-16 md:py-24">
+
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 items-center gap-10">
             {/* Left: stacked text */}
@@ -49,7 +50,7 @@ const Index = () => {
                 <div>INNOVATIVE</div>
                 <div>PRODUCTS THAT</div>
                 <div>MAKE WELLNESS</div>
-                <div><span className="text-glacier">SIMPLE.</span></div>
+                <div><FlippingText /></div>
               </h2>
             </div>
             {/* Right: product card slideshow */}
@@ -61,8 +62,8 @@ const Index = () => {
       </section>
 
       {/* Wavy Scrolling Text */}
-      <section className="py-8 overflow-hidden bg-black relative z-10 -mt-4">
-        <div className="absolute inset-0 matrix-dots opacity-30" aria-hidden="true" />
+      <section className="py-8 overflow-hidden bg-[#020410] relative z-10 -mt-4">
+
         <WaveMarquee speedSeconds={12} amplitudePx={24} tightnessSeconds={-0.04} repeats={4} />
       </section>
 
@@ -70,8 +71,8 @@ const Index = () => {
       <div className="w-full h-1 bg-white" />
 
       {/* The Thrive Factor - split layout with accordions */}
-      <section className="py-16 md:py-24 bg-black relative overflow-hidden">
-        <div className="absolute inset-0 matrix-dots opacity-30" aria-hidden="true" />
+      <section className="py-16 md:py-24 bg-[#020410] relative overflow-hidden">
+
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 items-start gap-12">
             {/* Left: Heading + accordion list */}

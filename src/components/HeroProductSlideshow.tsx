@@ -13,7 +13,16 @@ export function HeroProductSlideshow() {
         p => p.status !== "Removal Requested" && p.id !== "su-el-6"
     );
     // Remove first 4 and last 2 products
-    const filteredProducts = inStoreProducts.slice(4, -2);
+    let filteredProducts = inStoreProducts.slice(4, -2);
+
+    // User request: remove the last product, remove the second and third product from the slideshow
+    // Indices to remove: 1 (second), 2 (third), and the last one.
+    if (filteredProducts.length > 0) {
+        filteredProducts = filteredProducts.filter((_, index) =>
+            index !== 1 && index !== 2 && index !== filteredProducts.length - 1
+        );
+    }
+
     const displayProducts = filteredProducts.length > 0 ? filteredProducts : inStoreProducts;
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -102,7 +111,7 @@ export function HeroProductSlideshow() {
 
                                 {/* Quantity Selector */}
                                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-full px-2 py-1 border border-white/10 hidden sm:flex">
-                                    <button 
+                                    <button
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -114,7 +123,7 @@ export function HeroProductSlideshow() {
                                         −
                                     </button>
                                     <span className="w-8 text-center font-medium text-white text-sm">{quantities[product.id] || 1}</span>
-                                    <button 
+                                    <button
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
