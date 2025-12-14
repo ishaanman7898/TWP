@@ -22,7 +22,7 @@ export function FlippingText() {
                     initial={{ opacity: 0, rotateX: -90, y: 10 }}
                     animate={{ opacity: 1, rotateX: 0, y: 0 }}
                     exit={{ opacity: 0, rotateX: 90, y: -10 }}
-                    transition={{ duration: 0.6, ease: "backOut" }}
+                    transition={{ duration: 0.1, ease: "backOut" }}
                     className="absolute left-0 text-glacier block origin-center backface-hidden"
                     style={{ transformStyle: "preserve-3d" }}
                 >
