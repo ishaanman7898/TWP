@@ -49,9 +49,16 @@ export function Navbar() {
   const totalItems = cart.length;
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    let timeoutId: NodeJS.Timeout;
+    const onScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => setIsScrolled(window.scrollY > 10), 16);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
@@ -59,20 +66,20 @@ export function Navbar() {
       {/* Main Navbar */}
       <nav
         className={cn(
-          "fixed top-0 z-50 w-full transition-[padding,background-color] duration-500 ease-out",
-          isScrolled ? "py-2" : "py-5"
+          "fixed top-0 z-50 w-full transition-[padding,background-color] duration-300 ease-out",
+          isScrolled ? "py-1.5" : "py-2 sm:py-3"
         )}
       >
         <div className={cn(
-          "container mx-auto px-6 lg:px-10 transition-all duration-500 ease-out"
+          "container mx-auto px-6 lg:px-10 transition-all duration-300 ease-out"
         )}
         >
           <div
             className={cn(
-              "relative mx-auto mt-2 transition-[max-width,background-color,backdrop-filter,border-radius,padding] duration-500 ease-out",
+              "relative mx-auto mt-2 transition-[max-width,background-color,backdrop-filter,border-radius,padding] duration-300 ease-out",
               isScrolled
-                ? "max-w-[min(82vw,1100px)] bg-black/90 backdrop-blur-xl rounded-full px-8 md:px-10 lg:px-12 xl:px-16 py-4"
-                : "max-w-[min(96vw,1500px)] bg-transparent px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-6"
+                ? "max-w-[min(82vw,1100px)] bg-black/90 backdrop-blur-xl rounded-full px-6 md:px-8 lg:px-10 xl:px-12 py-3"
+                : "max-w-[min(96vw,1500px)] bg-transparent px-2 sm:px-3 md:px-4 lg:px-6 xl:px-8 py-2 sm:py-3"
             )}
           >
             <div className="flex items-center justify-between relative">

@@ -63,18 +63,15 @@ export function Hero() {
           </h1>
 
           {/* WELLNESS THAT WORKS with oval around WORKS - aligned with THRIVE */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 animate-fade-in-up delay-100 mb-10 md:mb-12 w-full">
-            <span className="font-display font-bold text-white tracking-wide text-[clamp(1.2rem,4vw,3rem)]">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 animate-fade-in-up delay-100 mb-10 md:mb-12 w-full">
+            <span className="font-display font-bold text-white tracking-wide text-[clamp(1.1rem,4vw,2.8rem)] text-center sm:text-left">
               WELLNESS THAT
             </span>
             <span className="relative inline-flex items-center justify-center">
-              {/* Glow halo */}
-              <span className="absolute -inset-3 rounded-full bg-primary/30 blur-xl animate-glow-pulse" aria-hidden="true" />
-              <span className="font-display font-bold text-primary tracking-wide px-4 sm:px-6 py-1 text-[clamp(1.2rem,4vw,3rem)]">
+              <span className="font-display font-bold text-primary tracking-wide px-3 sm:px-6 py-1 text-[clamp(1.1rem,4vw,2.8rem)]">
                 WORKS
               </span>
-              {/* Oval border around WORKS */}
-              <span className="absolute inset-0 border-2 border-primary/70 rounded-full" />
+              <span className="absolute inset-0 border-2 border-primary/70 rounded-full"></span>
             </span>
           </div>
         </div>
