@@ -22,7 +22,7 @@ export default function Contact() {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <main className="flex-1 pt-44 pb-20">
+      <main className="flex-1 pt-64 pb-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">

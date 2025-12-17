@@ -7,6 +7,19 @@ import { ArrowLeft } from "lucide-react";
 export default function Changelog() {
     const changes = [
         {
+            version: "1.8.1",
+            date: "December 16, 2025",
+            type: "Updates",
+            items: [
+                "Improved Navbar responsiveness and animation timing; increased unscrolled height and stabilized dropdown background color.",
+                "Removed Accessories category filter from the Shop page.",
+                "Updated favicon to use Thrive branding.",
+                "Redesigned Shipping page layout and added Aurora, IL location section with embedded map.",
+                "Moved Contact and Shipping page content down for better spacing.",
+                "Upgraded Product Management UI with Grid/List view toggle and click-to-edit side panel editor."
+            ]
+        },
+        {
             version: "1.8.0",
             date: "December 15, 2025",
             type: "Major Update",

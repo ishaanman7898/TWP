@@ -66,7 +66,8 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
           ProductService.getCategories()
         ]);
         setSupabaseProducts(productsData);
-        setCategories(categoriesData);
+        // Filter out Accessories from categories
+        setCategories(categoriesData.filter(cat => cat !== 'Accessories'));
       } catch (error) {
         console.error('Error fetching data from Supabase:', error);
       } finally {
@@ -102,7 +103,7 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
     let filtered = normalizedProducts.filter((product) => {
       const isVisible = product.status !== "Phased Out" && product.status !== "Removal Requested";
       const matchesCategory = selectedCategory === "All"
-        ? true // Show all categories except Accessories by default
+        ? product.category !== "Accessories" // Show all categories except Accessories by default
         : product.category === selectedCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (product.groupName && product.groupName.toLowerCase().includes(searchQuery.toLowerCase()));

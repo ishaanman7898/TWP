@@ -17,8 +17,8 @@ export function NewsletterPopup() {
         // Only show if not seen
         if (!output) {
             const handleInteraction = () => {
-                // Only trigger on product pages, shop pages, or cart-test
-                if (location.pathname.includes("/shop") || location.pathname.includes("/product") || location.pathname.includes("/cart-test")) {
+                // Only trigger on product pages or shop pages
+                if (location.pathname.includes("/shop") || location.pathname.includes("/product")) {
                     // Small delay to not be annoying immediately
                     setTimeout(() => {
                         setIsOpen(true);

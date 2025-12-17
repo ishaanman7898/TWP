@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase, Product, ProductInsert, ProductUpdate } from '@/lib/supabase'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Trash2, Edit, Plus, Upload, Image as ImageIcon } from 'lucide-react'
+import { Trash2, Edit, Plus, Image as ImageIcon, LayoutGrid, List, Search, X } from 'lucide-react'
 
 const ProductManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
 
@@ -68,6 +73,7 @@ const ProductManagement = () => {
       toast.success('Product created successfully!')
       resetForm()
       setIsCreateModalOpen(false)
+      setIsEditorOpen(false)
     },
     onError: (error) => {
       toast.error(`Error creating product: ${error.message}`)
@@ -94,6 +100,7 @@ const ProductManagement = () => {
       toast.success('Product updated successfully!')
       setEditingProduct(null)
       setIsEditModalOpen(false)
+      setIsEditorOpen(false)
     },
     onError: (error) => {
       toast.error(`Error updating product: ${error.message}`)
@@ -218,6 +225,31 @@ const ProductManagement = () => {
     setIsEditModalOpen(true)
   }
 
+  const openSideEditor = (product: Product) => {
+    setEditingProduct(product)
+    setFormData({
+      name: product.name,
+      description: product.description || '',
+      category: product.category,
+      status: product.status || 'In Store',
+      sku: product.sku,
+      price: product.price,
+      buy_link: product.buy_link || '',
+      image_url: product.image_url || '',
+      group_name: product.group_name || '',
+      color: product.color || '',
+      hex_color: product.hex_color || '',
+      specifications: product.specifications || {}
+    })
+    setImagePreview(product.image_url || '')
+    setIsEditorOpen(true)
+  }
+
+  const closeSideEditor = () => {
+    setIsEditorOpen(false)
+    setEditingProduct(null)
+  }
+
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       deleteProductMutation.mutate(id)
@@ -236,10 +268,25 @@ const ProductManagement = () => {
     }
   }
 
-  // Filter products
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(p => p.category === selectedCategory)
+  const filteredProducts = useMemo(() => {
+    const base = selectedCategory === 'all'
+      ? products
+      : products.filter(p => p.category === selectedCategory)
+
+    if (!searchTerm.trim()) return base
+    const term = searchTerm.toLowerCase()
+    return base.filter((p) => {
+      const haystack = [
+        p.name,
+        p.sku,
+        p.category,
+        p.group_name || '',
+        p.color || '',
+        p.status || ''
+      ].join(' ').toLowerCase()
+      return haystack.includes(term)
+    })
+  }, [products, searchTerm, selectedCategory])
 
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))]
 
@@ -255,9 +302,15 @@ const ProductManagement = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Product Management</h1>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+
+      <div className="container mx-auto px-4 lg:px-8 pt-52 pb-20 flex-grow">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+        <div>
+          <h1 className="font-display text-3xl md:text-4xl font-bold">Product <span className="text-glacier">Management</span></h1>
+          <p className="text-muted-foreground">Manage products, variants, and specifications</p>
+        </div>
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2">
@@ -474,70 +527,116 @@ const ProductManagement = () => {
         </Dialog>
       </div>
 
-      {/* Category Filter */}
-      <div className="mb-6">
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map(category => (
-              <SelectItem key={category} value={category}>
-                {category === 'all' ? 'All Categories' : category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          <div className="relative w-full sm:w-[320px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search name, SKU, category…"
+              className="pl-10"
+            />
+          </div>
+
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-56">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map(category => (
+                <SelectItem key={category} value={category}>
+                  {category === 'all' ? 'All Categories' : category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex rounded-lg overflow-hidden border border-border w-fit">
+          <button
+            type="button"
+            onClick={() => { setViewMode('grid'); setIsEditorOpen(false); }}
+            className={
+              "px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 " +
+              (viewMode === 'grid' ? 'bg-glacier text-white' : 'bg-muted hover:bg-muted/80')
+            }
+          >
+            <LayoutGrid className="w-4 h-4" />
+            Grid
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            className={
+              "px-3 py-2 text-sm font-medium transition-colors flex items-center gap-2 border-l border-border " +
+              (viewMode === 'list' ? 'bg-glacier text-white' : 'bg-muted hover:bg-muted/80')
+            }
+          >
+            <List className="w-4 h-4" />
+            List
+          </button>
+        </div>
       </div>
 
-      {/* Products Grid */}
       {isLoading ? (
-        <div className="text-center py-8">Loading products...</div>
-      ) : (
+        <div className="text-center py-12 text-muted-foreground">Loading products...</div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">No products found.</div>
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="overflow-hidden">
-              <div className="aspect-square bg-gray-100 relative">
-                {product.image_url ? (
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="h-12 w-12 text-gray-400" />
-                  </div>
-                )}
-                <Badge 
-                  className={`absolute top-2 right-2 ${
-                    product.status === 'In Store' ? 'bg-green-500' :
-                    product.status === 'Out of Stock' ? 'bg-red-500' :
-                    'bg-yellow-500'
-                  }`}
-                >
-                  {product.status}
-                </Badge>
-              </div>
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-lg font-bold">${product.price.toFixed(2)}</span>
-                  <Badge variant="secondary">{product.category}</Badge>
+            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <button type="button" className="w-full text-left" onClick={() => openSideEditor(product)}>
+                <div className="aspect-square bg-muted/30 relative">
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
+                    </div>
+                  )}
+                  <Badge
+                    className={`absolute top-2 right-2 ${
+                      product.status === 'In Store' ? 'bg-green-500' :
+                      product.status === 'Out of Stock' ? 'bg-red-500' :
+                      'bg-yellow-500'
+                    }`}
+                  >
+                    {product.status}
+                  </Badge>
                 </div>
-                {product.color && (
-                  <div className="flex items-center gap-2 mb-3">
-                    {product.hex_color && (
-                      <div 
-                        className="w-4 h-4 rounded border"
-                        style={{ backgroundColor: product.hex_color }}
-                      />
-                    )}
-                    <span className="text-sm text-gray-600">{product.color}</span>
+              </button>
+
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-lg mb-1 truncate">{product.name}</h3>
+                    <p className="text-xs text-muted-foreground truncate">SKU: {product.sku}</p>
                   </div>
-                )}
-                <div className="flex gap-2">
+                  <span className="text-lg font-bold text-glacier">${product.price.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between items-center mt-3">
+                  <Badge variant="secondary">{product.category}</Badge>
+                  {product.color && (
+                    <div className="flex items-center gap-2">
+                      {product.hex_color && (
+                        <div
+                          className="w-4 h-4 rounded border border-border"
+                          style={{ backgroundColor: product.hex_color }}
+                        />
+                      )}
+                      <span className="text-xs text-muted-foreground">{product.color}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2 mt-4">
                   <Button
                     size="sm"
                     variant="outline"
@@ -558,6 +657,270 @@ const ProductManagement = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="divide-y divide-border">
+            {filteredProducts.map((product) => (
+              <button
+                key={product.id}
+                type="button"
+                onClick={() => openSideEditor(product)}
+                className="w-full text-left px-4 py-4 hover:bg-muted/20 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-semibold truncate">{product.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{product.category} • SKU: {product.sku}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Status: {product.status}</span>
+                      {product.group_name && (
+                        <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Group: {product.group_name}</span>
+                      )}
+                      {product.color && (
+                        <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Variant: {product.color}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="font-bold text-glacier">${product.price.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Edit className="w-3 h-3" />
+                      Edit
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Side Editor Panel */}
+      {isEditorOpen && editingProduct && (
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            aria-label="Close"
+            className="absolute inset-0 bg-black/60"
+            onClick={closeSideEditor}
+          />
+          <div className="absolute right-0 top-0 h-full w-full max-w-2xl bg-background border-l border-border overflow-auto">
+            <div className="p-6 border-b border-border flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">Editing</p>
+                <h3 className="font-display text-2xl font-bold truncate">{editingProduct.name}</h3>
+                <p className="text-sm text-muted-foreground">SKU: {editingProduct.sku}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={closeSideEditor}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="side-name">Product Name</Label>
+                    <Input
+                      id="side-name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="side-sku">SKU</Label>
+                    <Input
+                      id="side-sku"
+                      value={formData.sku}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="side-description">Description</Label>
+                  <Textarea
+                    id="side-description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="side-category">Category</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Accessories">Accessories</SelectItem>
+                        <SelectItem value="Wellness">Wellness</SelectItem>
+                        <SelectItem value="Water Bottles">Water Bottles</SelectItem>
+                        <SelectItem value="Bundles">Bundles</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="side-status">Status</Label>
+                    <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="In Store">In Store</SelectItem>
+                        <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                        <SelectItem value="Removal Requested">Removal Requested</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="side-price">Price</Label>
+                    <Input
+                      id="side-price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="side-group">Group Name</Label>
+                    <Input
+                      id="side-group"
+                      value={formData.group_name}
+                      onChange={(e) => setFormData({ ...formData, group_name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="side-color">Color/Variant</Label>
+                    <Input
+                      id="side-color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="side-hex">Hex Color</Label>
+                    <Input
+                      id="side-hex"
+                      value={formData.hex_color}
+                      onChange={(e) => setFormData({ ...formData, hex_color: e.target.value })}
+                      placeholder="#000000"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="side-link">Buy Link</Label>
+                    <Input
+                      id="side-link"
+                      value={formData.buy_link}
+                      onChange={(e) => setFormData({ ...formData, buy_link: e.target.value })}
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="side-image">Product Image</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="side-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="flex-1"
+                    />
+                    {imagePreview && (
+                      <div className="w-16 h-16 border rounded overflow-hidden">
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Specifications Editor */}
+                <div>
+                  <Label>Specifications</Label>
+                  <div className="space-y-2 mt-2">
+                    {formData.specifications && Object.entries(formData.specifications).map(([key, value]) => (
+                      <div key={key} className="flex gap-2">
+                        <Input
+                          placeholder="Specification name (e.g., capacity, material)"
+                          value={key}
+                          onChange={(e) => {
+                            const newSpecs = { ...formData.specifications }
+                            delete newSpecs[key]
+                            newSpecs[e.target.value] = value
+                            setFormData({ ...formData, specifications: newSpecs })
+                          }}
+                          className="flex-1"
+                        />
+                        <Input
+                          placeholder="Value (e.g., 40 oz, Stainless Steel)"
+                          value={Array.isArray(value) ? value.join(', ') : String(value)}
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              specifications: { ...formData.specifications, [key]: e.target.value }
+                            })
+                          }}
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newSpecs = { ...formData.specifications }
+                            delete newSpecs[key]
+                            setFormData({ ...formData, specifications: newSpecs })
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          specifications: {
+                            ...formData.specifications,
+                            ['']: ''
+                          }
+                        })
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Specification
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button type="button" variant="outline" onClick={closeSideEditor}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateProductMutation.isPending}>
+                    {updateProductMutation.isPending ? 'Updating...' : 'Save Changes'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
 
@@ -772,6 +1135,9 @@ const ProductManagement = () => {
           )}
         </DialogContent>
       </Dialog>
+      </div>
+
+      <Footer />
     </div>
   )
 }

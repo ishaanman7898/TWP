@@ -66,19 +66,19 @@ export function Navbar() {
       {/* Main Navbar */}
       <nav
         className={cn(
-          "fixed top-0 z-50 w-full transition-[padding,background-color] duration-300 ease-out",
-          isScrolled ? "py-1.5" : "py-2 sm:py-3"
+          "fixed top-0 z-50 w-full navbar-adaptive",
+          isScrolled ? "py-2" : "py-4 sm:py-5"
         )}
       >
         <div className={cn(
-          "container mx-auto px-6 lg:px-10 transition-all duration-300 ease-out"
+          "container mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 navbar-adaptive"
         )}
         >
           <div
             className={cn(
-              "relative mx-auto mt-2 transition-[max-width,background-color,backdrop-filter,border-radius,padding] duration-300 ease-out",
+              "relative mx-auto mt-2 navbar-adaptive",
               isScrolled
-                ? "max-w-[min(82vw,1100px)] bg-black/90 backdrop-blur-xl rounded-full px-6 md:px-8 lg:px-10 xl:px-12 py-3"
+                ? "max-w-[min(82vw,1100px)] bg-black/90 backdrop-blur-xl rounded-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-3"
                 : "max-w-[min(96vw,1500px)] bg-transparent px-2 sm:px-3 md:px-4 lg:px-6 xl:px-8 py-2 sm:py-3"
             )}
           >
@@ -89,15 +89,15 @@ export function Navbar() {
                   src="/Thrive.png"
                   alt="Thrive"
                   className={cn(
-                    "w-auto object-contain drop-shadow transition-transform duration-500 origin-left",
-                    "h-16 md:h-20 lg:h-28",
+                    "w-auto object-contain drop-shadow navbar-adaptive origin-left",
+                    "h-12 sm:h-14 md:h-16 lg:h-20 xl:h-24",
                     isScrolled ? "scale-75" : "scale-110"
                   )}
                 />
               </a>
 
               {/* Desktop Navigation - Centered */}
-              <div className="hidden lg:flex items-center gap-4 absolute left-1/2 -translate-x-1/2">
+              <div className="hidden lg:flex items-center gap-2 sm:gap-3 md:gap-4 absolute left-1/2 -translate-x-1/2">
                 {navLinks.map((link) => (
                   <div
                     key={link.label}
@@ -108,14 +108,14 @@ export function Navbar() {
                     <a
                       href={link.href}
                       className={cn(
-                        "flex items-center gap-1 px-4 py-2 text-white font-medium transition-colors duration-200",
-                        "hover:text-ocean"
+                        "flex items-center gap-1 px-3 py-2 font-medium transition-all duration-300 hover-lift",
+                        "text-white hover:text-ocean"
                       )}
                     >
                       {link.label}
                       {link.hasDropdown && (
                         <ChevronDown className={cn(
-                          "w-4 h-4 transition-transform duration-200",
+                          "w-4 h-4 navbar-adaptive",
                           activeDropdown === link.label && "rotate-180"
                         )} />
                       )}
@@ -123,20 +123,18 @@ export function Navbar() {
 
                     {/* Dropdown */}
                     {link.hasDropdown && activeDropdown === link.label && (
-                      <div className="absolute top-full left-0 pt-2 animate-fade-in">
+                      <div className="absolute top-full left-0 pt-2">
                         <div
                           className={cn(
-                            "rounded-xl p-2 min-w-[220px] border border-border transition-colors",
-                            isScrolled
-                              ? "bg-black/90 backdrop-blur-xl"
-                              : "bg-black/90 backdrop-blur-xl"
+                            "rounded-xl p-2 min-w-[220px] border border-border dropdown-enhanced",
+                            "bg-black/90 backdrop-blur-xl"
                           )}
                         >
                           {link.dropdownItems?.map((item) => (
                             <a
                               key={item.label}
                               href={item.href}
-                              className="block px-4 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                              className="block px-4 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 hover-lift"
                             >
                               {item.label}
                             </a>
@@ -149,9 +147,9 @@ export function Navbar() {
               </div>
 
               {/* Right Side Actions - Cart & Shop */}
-              <div className="hidden lg:flex items-center gap-4">
+              <div className="hidden lg:flex items-center gap-2 sm:gap-3 md:gap-4">
                 {/* Cart Icon */}
-                <Link to="/cart" className="relative group text-white hover:text-ocean transition-colors">
+                <Link to="/cart" className="relative group text-white hover:text-ocean transition-all duration-300 hover-lift">
                   <ShoppingCart className="w-6 h-6" />
                   {totalItems > 0 && (
                     <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -164,7 +162,7 @@ export function Navbar() {
                 <div className="h-6 w-px bg-white/20"></div>
 
                 {/* Shop Button */}
-                <Button variant="nav-cta" className="rounded-full px-6 group relative hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:shadow-blue-500/50 transition-all duration-300" asChild>
+                <Button variant="nav-cta" className="rounded-full px-4 sm:px-6 group relative hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:shadow-blue-500/50 transition-all duration-500 hover-lift" asChild>
                   <Link to="/shop">
                     Shop
                   </Link>

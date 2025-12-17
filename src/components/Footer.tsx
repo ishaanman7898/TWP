@@ -165,7 +165,7 @@ export function Footer() {
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
               <Link to="/changelog" className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline">
-                v1.8.0 - Stable Release
+                v1.8.1 - Updates
               </Link>
             </p>
 

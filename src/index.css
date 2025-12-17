@@ -312,3 +312,80 @@
     transform: translateX(4px);
   }
 }
+
+/* High-quality navbar gradient animations */
+@keyframes gradient-text-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes dropdown-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes navbar-pill-transition {
+  0% {
+    border-radius: 0.75rem;
+    max-width: 100%;
+  }
+  100% {
+    border-radius: 9999px;
+    max-width: min(82vw, 1100px);
+  }
+}
+
+/* Enhanced gradient text utility */
+.nav-link-gradient {
+  background: linear-gradient(90deg, 
+    hsl(210 40% 98%) 0%, 
+    hsl(210 100% 50%) 25%, 
+    hsl(195 100% 85%) 50%, 
+    hsl(200 80% 70%) 75%, 
+    hsl(210 40% 98%) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link-gradient:hover {
+  background-position: 100% 50%;
+  transform: translateY(-1px);
+}
+
+/* Enhanced dropdown animations */
+.dropdown-enhanced {
+  animation: dropdown-fade-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Adaptive navbar transitions */
+.navbar-adaptive {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* High-quality hover states */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}

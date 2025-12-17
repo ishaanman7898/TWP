@@ -4,12 +4,35 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { Trash2, ShoppingBag, Truck, Zap } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, addToCart } = useCart();
   const navigate = useNavigate();
   const [shippingMethod, setShippingMethod] = useState<'standard' | 'express'>('standard');
+
+  const shippingOptions = [
+    {
+      value: 'standard',
+      label: 'Standard Shipping',
+      description: '5-7 business days',
+      price: 0,
+      icon: Truck,
+      badge: 'Free'
+    },
+    {
+      value: 'express',
+      label: 'Express Shipping',
+      description: '2-3 business days',
+      price: 10,
+      icon: Zap,
+      badge: '+$10.00'
+    }
+  ];
+
+  const selectedShipping = shippingOptions.find(option => option.value === shippingMethod);
 
   const handleCheckout = () => {
     // If express shipping is selected, add the express shipping "product" to the cart
@@ -133,28 +156,55 @@ export default function Cart() {
                     </div>
 
                     {/* Shipping Selection */}
-                    <div className="space-y-2 pt-2">
+                    <div className="space-y-3 pt-2">
                       <label className="text-sm font-medium">Shipping Method</label>
-                      <select
-                        className="w-full bg-background border border-border rounded-lg p-2 text-sm"
-                        value={shippingMethod}
-                        onChange={(e) => setShippingMethod(e.target.value as 'standard' | 'express')}
-                      >
-                        <option value="standard">Standard Shipping (Free)</option>
-                        <option value="express">Express Shipping (+$10.00)</option>
-                      </select>
+                      <Select value={shippingMethod} onValueChange={(value) => setShippingMethod(value as 'standard' | 'express')}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select shipping method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {shippingOptions.map((option) => {
+                            const Icon = option.icon;
+                            return (
+                              <SelectItem key={option.value} value={option.value}>
+                                <div className="flex items-center gap-3 w-full">
+                                  <Icon className="w-4 h-4 text-muted-foreground" />
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">{option.label}</span>
+                                      <Badge variant={option.price === 0 ? "secondary" : "outline"} className="text-xs">
+                                        {option.badge}
+                                      </Badge>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {option.description}
+                                    </div>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+
+                      {selectedShipping && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 rounded-lg p-2">
+                          <selectedShipping.icon className="w-3 h-3" />
+                          <span>{selectedShipping.description}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex justify-between text-muted-foreground pt-2">
                       <span>Shipping Cost</span>
-                      <span>{shippingMethod === 'express' ? '$10.00' : 'Free'}</span>
+                      <span>{selectedShipping?.price === 0 ? 'Free' : `$${selectedShipping?.price.toFixed(2)}`}</span>
                     </div>
                   </div>
 
                   <div className="border-t border-border pt-4 mb-6">
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-primary">${(totalPrice + (shippingMethod === 'express' ? 10 : 0)).toFixed(2)}</span>
+                      <span className="text-primary">${(totalPrice + (selectedShipping?.price || 0)).toFixed(2)}</span>
                     </div>
                   </div>
 

@@ -17,10 +17,8 @@ import Stories from "./pages/Stories";
 import Team from "./pages/Team";
 import ProductManagement from "./pages/ProductManagement";
 import Login from "./pages/Login";
-import Admin from "./pages/Admin";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ProductDetail from "./pages/ProductDetail";
-import CartTest from "./pages/CartTest";
 import Featured from "./pages/Featured";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -62,7 +60,6 @@ const App = () => (
 
             <Route path="/shop/bundles" element={<Bundles />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/cart-test" element={<CartTest />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/checkout-loading" element={<CheckoutLoading />} />
@@ -82,7 +79,6 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
