@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { getImagePath } from "@/lib/imageUtils";
 import type { Product } from "@/data/products";
 
 interface UseProductsCsvResult {
@@ -206,7 +207,7 @@ export function useProductsCsv(): UseProductsCsvResult {
       const hexColor = getHexColor(groupName, color);
 
       const id = sku.toLowerCase();
-      const image = `/product-images/${sku}.png`;
+      const image = getImagePath(`/product-images/${sku}.png`);
 
       const product: Product = {
         id,

@@ -131,7 +131,7 @@ const ProductManagement = () => {
     try {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
-      const filePath = `product-images/${fileName}`
+      const filePath = getImagePath(`product-images/${fileName}`)
 
       console.log('Uploading file to:', filePath)
       

@@ -7,6 +7,14 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   // Base path for GitHub Pages project site: https://ishaanman7898.github.io/TWP/
   base: mode === "production" ? "/TWP/" : "/",
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
+    }
+  },
   server: {
     host: "::",
     port: 8080,

@@ -1,4 +1,5 @@
 import { Instagram, Mail } from "lucide-react";
+import { getImagePath } from "@/lib/imageUtils";
 import { Link } from "react-router-dom";
 
 // TikTok icon component (not in lucide-react)
@@ -51,7 +52,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 border-r border-border pr-8">
             <a href="/" className="flex items-center gap-2 mb-4">
-              <img src="/Thrive.png" alt="Thrive" className="h-12 w-auto object-contain" />
+              <img src={getImagePath("/Thrive.png")} alt="Thrive" className="h-12 w-auto object-contain" />
             </a>
             <p className="text-muted-foreground mb-6 max-w-xs">
               Premium wellness products designed for those who demand more from life.
