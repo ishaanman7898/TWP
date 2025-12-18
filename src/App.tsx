@@ -39,7 +39,7 @@ import Mission from "./pages/Mission";
 
 const queryClient = new QueryClient();
 
-const basename = import.meta.env.PROD ? "/ve-wellness-blue" : "/";
+const basename = import.meta.env.PROD ? "/TWP" : "/";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
