@@ -1,7 +1,29 @@
 # VE Wellness Blue
-**Current Version: v1.7.1**
+**Current Version: v1.9.0**
 
-This repository contains the source code for the **VE Wellness Blue** e-commerce website, built with **React**, **Vite**, **Tailwind CSS**, and **shadcn/ui**. It provides a premium shopping experience for wellness products.
+This repository contains the source code for **VE Wellness Blue** e-commerce website, built with **React**, **Vite**, **Tailwind CSS**, and **shadcn/ui**. It provides a premium shopping experience for wellness products.
+
+## Changelog
+
+### v1.9.0 - Supabase Tweaks and General Product Management Updates
+- **Enhanced Product Management:**
+  - Added drag-and-drop variant ordering that works regardless of Sort By filter
+  - Implemented hover up/down arrows for manual reordering in list view
+  - Added order numbers on cards in manual mode (grid and list views)
+  - Auto-saves variant order immediately on drag/drop to Supabase
+  - Fixed edit buttons to properly open product edit modal
+  - Improved filter UI/UX with better spacing and visual hierarchy
+
+- **Storefront Integration:**
+  - Fixed color swatches to display properly on all product pages
+  - Ensured swatches follow variant_order set in ProductManagement
+  - Updated ProductLineSection to normalize Supabase fields and sort by variant_order
+  - Made Accessories page pull from Supabase instead of static data
+  - All product line pages now reflect admin ordering changes
+
+- **Database:**
+  - Added variant_order column to products table for persistent variant ordering
+  - Full SQL provided for Supabase implementation
 
 ## Project Structure
 
@@ -31,17 +53,6 @@ Follow these steps to set up the project locally:
     npm run dev
     ```
     The site will typically be available at `http://localhost:5173`.
-
-## Deployment
-
-### Netlify
-
-This project is configured for deployment on Netlify. A `netlify.toml` file is included to handle Single Page Application (SPA) routing redirects.
-
-1.  Connect your repository to Netlify.
-2.  Use the following build settings:
-    *   **Build command:** `npm run build`
-    *   **Publish directory:** `dist`
 
 ## Features
 

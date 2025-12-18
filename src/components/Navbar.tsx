@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getImagePath } from "@/lib/imageUtils";
 import { useCart } from "@/contexts/CartContext";
 
 const navLinks = [
@@ -87,7 +86,7 @@ export function Navbar() {
               {/* Logo */}
               <a href="/" className="flex items-center gap-3 group flex-shrink-0">
                 <img
-                  src={getImagePath("/Thrive.png")}
+                  src="/Thrive.png"
                   alt="Thrive"
                   className={cn(
                     "w-auto object-contain drop-shadow navbar-adaptive origin-left transition-all duration-300 ease-in-out",

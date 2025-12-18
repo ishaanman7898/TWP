@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { products, Product } from "@/data/products";
-import { useProductsCsv } from "@/hooks/useProductsCsv";
+import { ProductService } from "@/services/ProductService";
+import { Product } from "@/lib/supabase";
 import { ShoppingCart, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
@@ -12,8 +12,23 @@ import { ProductLineSection } from "@/components/ProductLineSection";
 
 export default function AccessoriesPage() {
     const { addToCart } = useCart();
-    const { products: csvProducts } = useProductsCsv();
-    const sourceProducts = csvProducts.length ? csvProducts : products;
+    const [sourceProducts, setSourceProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const allProducts = await ProductService.getAllProducts();
+                setSourceProducts(allProducts);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     const accessoriesProducts = useMemo(() => {
         return sourceProducts.filter((product) => product.category === "Accessories");
@@ -21,14 +36,29 @@ export default function AccessoriesPage() {
 
     const groupedProducts = useMemo(() => {
         const groups: { [key: string]: Product[] } = {};
+
         accessoriesProducts.forEach(product => {
-            if (!groups[product.groupName]) {
-                groups[product.groupName] = [];
+            const groupName = product.group_name || product.name;
+            if (!groups[groupName]) {
+                groups[groupName] = [];
             }
-            groups[product.groupName].push(product);
+            groups[groupName].push(product);
         });
+
         return Object.values(groups);
     }, [accessoriesProducts]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-black text-white">
+                <Navbar />
+                <div className="container mx-auto px-4 lg:px-8 pt-52 pb-20">
+                    <div className="text-center py-12 text-white/70">Loading products...</div>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -70,7 +100,7 @@ export default function AccessoriesPage() {
                         </p>
                         <div className="flex flex-wrap justify-center gap-3">
                             {groupedProducts.map((group) => {
-                                const label = group[0].groupName;
+                                const label = group[0].group_name || group[0].name;
                                 const sectionId = label.toLowerCase().replace(/\s+/g, "-");
                                 return (
                                     <a
@@ -89,10 +119,10 @@ export default function AccessoriesPage() {
                 {/* Product Showcase Sections */}
                 <div className="relative">
                     {groupedProducts.map((group, index) => {
-                        const sectionId = group[0].groupName.toLowerCase().replace(/\s+/g, "-");
+                        const sectionId = (group[0].group_name || group[0].name).toLowerCase().replace(/\s+/g, "-");
                         const isLast = index === groupedProducts.length - 1;
                         return (
-                            <div key={group[0].groupName}>
+                            <div key={group[0].id}>
                                 <ProductLineSection
                                     variants={group}
                                     index={index}
@@ -109,162 +139,6 @@ export default function AccessoriesPage() {
                 </div>
             </div>
             <Footer />
-        </div>
-    );
-}
-
-function ProductCard({ variants, index, addToCart }: { variants: Product[]; index: number; addToCart: any }) {
-    const [selectedVariant, setSelectedVariant] = useState(variants[0]);
-    const [quantity, setQuantity] = useState(1);
-    const product = selectedVariant;
-
-    useEffect(() => {
-        setSelectedVariant(variants[0]);
-    }, [variants]);
-
-    const slugify = (text: string) =>
-        text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-
-    const handleAddToCart = () => {
-        for (let i = 0; i < quantity; i++) {
-            addToCart({
-                name: product.name,
-                link: product.buyLink,
-                price: product.price,
-                image: product.image,
-            });
-        }
-        setQuantity(1);
-    };
-
-    return (
-        <div
-            className={cn(
-                "group relative rounded-2xl overflow-hidden transition-all duration-500 h-[500px] shadow-xl hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-2 animate-fade-in-up border border-border/50",
-            )}
-            style={{ animationDelay: `${index * 50}ms` }}
-        >
-            {/* Full Background Image */}
-            <div className="absolute inset-0 bg-white">
-                <Link to={`/product/${slugify(product.groupName)}`} className="absolute inset-0 z-10" aria-label={`View ${product.groupName}`} />
-                {product.image ? (
-                    <img
-                        key={product.image}
-                        src={product.image.replace(/^public\//, '/')}
-                        alt={product.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).style.display = 'none';
-                        }}
-                    />
-                ) : null}
-
-                {/* Fallback Placeholder */}
-                <div className={cn(
-                    "absolute inset-0 flex items-center justify-center bg-gray-100",
-                    product.image ? "hidden" : ""
-                )}>
-                    <div className="text-6xl font-display font-bold text-gray-300">
-                        {product.groupName.charAt(0)}
-                    </div>
-                </div>
-                {/* No Image Overlay */}
-                {!product.image && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
-                        <div className="text-6xl font-display font-bold text-gray-300">
-                            {product.groupName.charAt(0)}
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Gradient Overlay for Text Readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
-
-            {/* Top badges */}
-            <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
-                <span className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold shadow-lg backdrop-blur-md bg-white/90 text-orange-600"
-                )}>
-                    Accessories
-                </span>
-            </div>
-
-            {/* Product Info Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col z-20 text-white">
-                <h3 className="font-display text-2xl font-bold mb-3 line-clamp-2 tracking-wide leading-tight shadow-black/50 drop-shadow-md">
-                    <Link to={`/product/${slugify(product.groupName)}`} className="hover:underline">
-                        {product.groupName}
-                    </Link>
-                </h3>
-
-                {/* Variant Swatches */}
-                {variants.length > 1 && (
-                    <div className="flex flex-wrap gap-2 mb-4 items-center">
-                        {variants.map((variant) => (
-                            <button
-                                key={variant.id}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setSelectedVariant(variant);
-                                }}
-                                className={cn(
-                                    "w-6 h-6 rounded-full border border-white/30 transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-sm",
-                                    selectedVariant.id === variant.id && "ring-2 ring-white scale-110",
-                                    variant.hexColor === "#FFFFFF" && "bg-white",
-                                )}
-                                style={{ backgroundColor: variant.hexColor }}
-                                title={variant.color}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                <div className="mt-2 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <span className="text-3xl font-display font-bold">${product.price.toFixed(2)}</span>
-
-                        {/* Quantity Selector */}
-                        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-full px-2 py-1 border border-white/20">
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setQuantity(Math.max(1, quantity - 1));
-                                }}
-                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 hover:scale-110 flex items-center justify-center text-sm font-bold transition-all duration-200"
-                                aria-label="Decrease quantity"
-                            >
-                                −
-                            </button>
-                            <span className="w-8 text-center font-medium text-sm">{quantity}</span>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setQuantity(Math.min(99, quantity + 1));
-                                }}
-                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 hover:scale-110 flex items-center justify-center text-sm font-bold transition-all duration-200"
-                                aria-label="Increase quantity"
-                            >
-                                +
-                            </button>
-                        </div>
-                    </div>
-
-                    <Button
-                        variant="default"
-                        size="lg"
-                        className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleAddToCart();
-                        }}
-                    >
-                        <ShoppingCart className="w-5 h-5 mr-2" />
-                        Add to Cart
-                    </Button>
-                </div>
-            </div>
         </div>
     );
 }

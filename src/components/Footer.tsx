@@ -1,5 +1,4 @@
 import { Instagram, Mail } from "lucide-react";
-import { getImagePath } from "@/lib/imageUtils";
 import { Link } from "react-router-dom";
 
 // TikTok icon component (not in lucide-react)
@@ -39,8 +38,8 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-  { icon: TikTokIcon, href: "https://tiktok.com", label: "TikTok" },
+  { icon: Instagram, href: "https://www.instagram.com/vei.thrive/", label: "Instagram" },
+  { icon: TikTokIcon, href: "https://www.tiktok.com/@vei.thriveee", label: "TikTok" },
   { icon: Mail, href: "mailto:contact@thrivewellness.com", label: "Email" },
 ];
 
@@ -52,7 +51,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 border-r border-border pr-8">
             <a href="/" className="flex items-center gap-2 mb-4">
-              <img src={getImagePath("/Thrive.png")} alt="Thrive" className="h-12 w-auto object-contain" />
+              <img src="/Thrive.png" alt="Thrive" className="h-12 w-auto object-contain" />
             </a>
             <p className="text-muted-foreground mb-6 max-w-xs">
               Premium wellness products designed for those who demand more from life.
@@ -166,7 +165,7 @@ export function Footer() {
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
               <Link to="/changelog" className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline">
-                v1.8.4 - Bug fixes and patches
+                v1.9.0 - Supabase Tweaks and General Product Management Updates
               </Link>
             </p>
 

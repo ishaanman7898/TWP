@@ -7,6 +7,25 @@ import { ArrowLeft } from "lucide-react";
 export default function Changelog() {
     const changes = [
         {
+            version: "1.9.0",
+            date: "December 17, 2025",
+            type: "Supabase Tweaks and General Product Management Updates",
+            items: [
+                "Enhanced Product Management with drag-and-drop variant ordering that works regardless of Sort By filter.",
+                "Implemented hover up/down arrows for manual reordering in list view.",
+                "Added order numbers on cards in manual mode (grid and list views).",
+                "Auto-saves variant order immediately on drag/drop to Supabase.",
+                "Fixed edit buttons to properly open product edit modal.",
+                "Improved filter UI/UX with better spacing and visual hierarchy.",
+                "Fixed color swatches to display properly on all product pages.",
+                "Ensured swatches follow variant_order set in ProductManagement.",
+                "Updated ProductLineSection to normalize Supabase fields and sort by variant_order.",
+                "Made Accessories page pull from Supabase instead of static data.",
+                "All product line pages now reflect admin ordering changes.",
+                "Added variant_order column to products table for persistent variant ordering."
+            ]
+        },
+        {
             version: "1.8.4",
             date: "December 17, 2025",
             type: "Bug fixes and patches",

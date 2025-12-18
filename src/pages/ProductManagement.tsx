@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase, Product, ProductInsert, ProductUpdate } from '@/lib/supabase'
-import { getImagePath } from '@/lib/imageUtils'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Trash2, Edit, Plus, Image as ImageIcon, LayoutGrid, List, Search, X } from 'lucide-react'
+import { Trash2, Edit, Plus, Image as ImageIcon, LayoutGrid, List, Search, X, ArrowUpDown, MoveUp, MoveDown } from 'lucide-react'
 
 const ProductManagement = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -25,6 +24,10 @@ const ProductManagement = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
+  const [sortBy, setSortBy] = useState<'manual' | 'sku' | 'color' | 'name'>('sku')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [manualOrders, setManualOrders] = useState<Record<string, Product[]>>({})
 
   const queryClient = useQueryClient()
 
@@ -42,6 +45,30 @@ const ProductManagement = () => {
     color: '',
     hex_color: '',
     specifications: {}
+  })
+
+  const updateVariantOrderMutation = useMutation({
+    mutationFn: async ({ updates }: { updates: Array<{ id: string; variant_order: number | null }> }) => {
+      const results = await Promise.all(
+        updates.map(({ id, variant_order }) =>
+          supabase
+            .from('products')
+            .update({ variant_order })
+            .eq('id', id)
+            .select('id')
+        )
+      )
+
+      const firstError = results.find(r => r.error)?.error
+      if (firstError) throw firstError
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      toast.success('Variant order saved!')
+    },
+    onError: (error) => {
+      toast.error(`Error saving variant order: ${error.message}`)
+    }
   })
 
   // Fetch products
@@ -101,6 +128,7 @@ const ProductManagement = () => {
       toast.success('Product updated successfully!')
       setEditingProduct(null)
       setIsEditModalOpen(false)
+      setIsCreateModalOpen(false)
       setIsEditorOpen(false)
     },
     onError: (error) => {
@@ -132,7 +160,7 @@ const ProductManagement = () => {
     try {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
-      const filePath = getImagePath(`product-images/${fileName}`)
+      const filePath = `product-images/${fileName}`
 
       console.log('Uploading file to:', filePath)
       
@@ -223,7 +251,7 @@ const ProductManagement = () => {
       specifications: product.specifications || {}
     })
     setImagePreview(product.image_url || '')
-    setIsEditModalOpen(true)
+    setIsCreateModalOpen(true)
   }
 
   const openSideEditor = (product: Product) => {
@@ -289,6 +317,127 @@ const ProductManagement = () => {
     })
   }, [products, searchTerm, selectedCategory])
 
+  // Group products by group_name for better organization
+  const groupedProducts = useMemo(() => {
+    const groups: { [key: string]: Product[] } = {}
+    filteredProducts.forEach(product => {
+      const groupName = product.group_name || product.name
+      if (!groups[groupName]) {
+        groups[groupName] = []
+      }
+      groups[groupName].push(product)
+    })
+
+    // Sort each group by the selected criteria
+    Object.keys(groups).forEach(groupName => {
+      if (sortBy === 'manual') {
+        if (manualOrders[groupName]?.length) {
+          groups[groupName] = manualOrders[groupName]
+          return
+        }
+
+        groups[groupName].sort((a, b) => {
+          const aOrder = a.variant_order ?? Number.POSITIVE_INFINITY
+          const bOrder = b.variant_order ?? Number.POSITIVE_INFINITY
+          return aOrder - bOrder
+        })
+        return
+      }
+
+      groups[groupName].sort((a, b) => {
+        let aValue: string | number
+        let bValue: string | number
+
+        switch (sortBy) {
+          case 'sku':
+            aValue = a.sku
+            bValue = b.sku
+            break
+          case 'color':
+            aValue = a.color || ''
+            bValue = b.color || ''
+            break
+          case 'name':
+            aValue = a.name
+            bValue = b.name
+            break
+          default:
+            aValue = a.sku
+            bValue = b.sku
+        }
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortOrder === 'asc' 
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue)
+        }
+        
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortOrder === 'asc' 
+            ? aValue - bValue
+            : bValue - aValue
+        }
+
+        return 0
+      })
+    })
+
+    return groups
+  }, [filteredProducts, sortBy, sortOrder, manualOrders])
+
+  const reorderGroup = (groupName: string, targetId: string) => {
+    if (!draggingId || draggingId === targetId) return null
+
+    const current = manualOrders[groupName] ?? groupedProducts[groupName]
+    if (!current) return null
+
+    const fromIndex = current.findIndex(p => p.id === draggingId)
+    const toIndex = current.findIndex(p => p.id === targetId)
+    if (fromIndex === -1 || toIndex === -1) return null
+
+    const next = [...current]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    setManualOrders(prev => ({ ...prev, [groupName]: next }))
+    setSortBy('manual')
+    return next
+  }
+
+  const saveGroupOrder = (groupName: string, listOverride?: Product[]) => {
+    const list = listOverride ?? manualOrders[groupName]
+    if (!list?.length) return
+
+    updateVariantOrderMutation.mutate({
+      updates: list.map((p, idx) => ({ id: p.id, variant_order: idx }))
+    })
+  }
+
+  const reorderGroupAndPersist = (groupName: string, targetId: string) => {
+    const next = reorderGroup(groupName, targetId)
+    if (next) {
+      saveGroupOrder(groupName, next)
+    }
+  }
+
+  const moveVariant = (groupName: string, productId: string, direction: 'up' | 'down') => {
+    const current = manualOrders[groupName] ?? groupedProducts[groupName]
+    if (!current) return
+
+    const index = current.findIndex(p => p.id === productId)
+    if (index === -1) return
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= current.length) return
+
+    const next = [...current]
+    const [moved] = next.splice(index, 1)
+    next.splice(newIndex, 0, moved)
+
+    setManualOrders(prev => ({ ...prev, [groupName]: next }))
+    setSortBy('manual')
+    saveGroupOrder(groupName, next)
+  }
+
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))]
 
   if (error) {
@@ -312,16 +461,26 @@ const ProductManagement = () => {
           <h1 className="font-display text-3xl md:text-4xl font-bold">Product <span className="text-glacier">Management</span></h1>
           <p className="text-muted-foreground">Manage products, variants, and specifications</p>
         </div>
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Product
-            </Button>
-          </DialogTrigger>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Dialog
+            open={isCreateModalOpen}
+            onOpenChange={(open) => {
+              setIsCreateModalOpen(open)
+              if (!open) {
+                setEditingProduct(null)
+                resetForm()
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Product
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add New Product</DialogTitle>
+              <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -520,13 +679,23 @@ const ProductManagement = () => {
                 <Button type="button" variant="outline" onClick={() => setIsCreateModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createProductMutation.isPending}>
-                  {createProductMutation.isPending ? 'Creating...' : 'Create Product'}
+                <Button
+                  type="submit"
+                  disabled={
+                    editingProduct
+                      ? updateProductMutation.isPending
+                      : createProductMutation.isPending
+                  }
+                >
+                  {editingProduct
+                    ? (updateProductMutation.isPending ? 'Saving...' : 'Save Changes')
+                    : (createProductMutation.isPending ? 'Creating...' : 'Create Product')}
                 </Button>
               </div>
             </form>
           </DialogContent>
         </Dialog>
+      </div>
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
@@ -579,19 +748,80 @@ const ProductManagement = () => {
             List
           </button>
         </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Sort by:</span>
+          <Select value={sortBy} onValueChange={(value: 'manual' | 'sku' | 'color' | 'name') => setSortBy(value)}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Manual</SelectItem>
+              <SelectItem value="sku">SKU</SelectItem>
+              <SelectItem value="color">Color</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            className="flex items-center gap-1"
+          >
+            {sortOrder === 'asc' ? <MoveUp className="w-4 h-4" /> : <MoveDown className="w-4 h-4" />}
+            {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Loading products...</div>
-      ) : filteredProducts.length === 0 ? (
+      ) : Object.keys(groupedProducts).length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">No products found.</div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <button type="button" className="w-full text-left" onClick={() => openSideEditor(product)}>
-                <div className="aspect-square bg-muted/30 relative">
-                  {product.image_url ? (
+        <div className="space-y-8">
+          {Object.entries(groupedProducts).map(([groupName, productsInGroup]) => (
+            <div key={groupName} className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">{groupName}</h2>
+                <Badge variant="secondary">{productsInGroup.length} variants</Badge>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={updateVariantOrderMutation.isPending}
+                  onClick={() => saveGroupOrder(groupName)}
+                  className="ml-auto"
+                >
+                  {updateVariantOrderMutation.isPending ? 'Saving…' : 'Save order'}
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {productsInGroup.map((product, index) => (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow relative">
+                    {sortBy === 'manual' && (
+                      <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-xs font-semibold border">
+                        {index + 1}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      className="w-full text-left"
+                      onClick={() => openSideEditor(product)}
+                      draggable
+                      onDragStart={() => setDraggingId(product.id)}
+                      onDragEnd={() => setDraggingId(null)}
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault()
+                        reorderGroupAndPersist(groupName, product.id)
+                      }}
+                    >
+                      <div className="aspect-square bg-muted/30 relative">
+                        {product.image_url ? (
                     <img
                       src={product.image_url}
                       alt={product.name}
@@ -635,511 +865,186 @@ const ProductManagement = () => {
                           style={{ backgroundColor: product.hex_color }}
                         />
                       )}
-                      <span className="text-xs text-muted-foreground">{product.color}</span>
+                      <span className="text-sm text-muted-foreground">{product.color}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="flex gap-2 mt-4">
                   <Button
-                    size="sm"
+                    type="button"
                     variant="outline"
-                    onClick={() => handleEdit(product)}
+                    size="sm"
                     className="flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleEdit(product)
+                    }}
                   >
-                    <Edit className="h-4 w-4 mr-1" />
+                    <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </Button>
                   <Button
-                    size="sm"
+                    type="button"
                     variant="destructive"
-                    onClick={() => handleDelete(product.id)}
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(product.id)
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
             </Card>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="divide-y divide-border">
-            {filteredProducts.map((product) => (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => openSideEditor(product)}
-                className="w-full text-left px-4 py-4 hover:bg-muted/20 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="font-semibold truncate">{product.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{product.category} • SKU: {product.sku}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Status: {product.status}</span>
-                      {product.group_name && (
-                        <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Group: {product.group_name}</span>
-                      )}
-                      {product.color && (
-                        <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">Variant: {product.color}</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="font-bold text-glacier">${product.price.toFixed(2)}</span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Edit className="w-3 h-3" />
-                      Edit
-                    </span>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Side Editor Panel */}
-      {isEditorOpen && editingProduct && (
-        <div className="fixed inset-0 z-50">
-          <button
-            type="button"
-            aria-label="Close"
-            className="absolute inset-0 bg-black/60"
-            onClick={closeSideEditor}
-          />
-          <div className="absolute right-0 top-0 h-full w-full max-w-2xl bg-background border-l border-border overflow-auto">
-            <div className="p-6 border-b border-border flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground">Editing</p>
-                <h3 className="font-display text-2xl font-bold truncate">{editingProduct.name}</h3>
-                <p className="text-sm text-muted-foreground">SKU: {editingProduct.sku}</p>
+        <div className="space-y-6">
+          {Object.entries(groupedProducts).map(([groupName, productsInGroup]) => (
+            <div key={groupName} className="space-y-3">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold">{groupName}</h2>
+                <Badge variant="secondary">{productsInGroup.length} variants</Badge>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={updateVariantOrderMutation.isPending}
+                  onClick={() => saveGroupOrder(groupName)}
+                  className="ml-auto"
+                >
+                  {updateVariantOrderMutation.isPending ? 'Saving…' : 'Save order'}
+                </Button>
               </div>
-              <Button variant="ghost" size="icon" onClick={closeSideEditor}>
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            <div className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="side-name">Product Name</Label>
-                    <Input
-                      id="side-name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="side-sku">SKU</Label>
-                    <Input
-                      id="side-sku"
-                      value={formData.sku}
-                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="side-description">Description</Label>
-                  <Textarea
-                    id="side-description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="side-category">Category</Label>
-                    <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Accessories">Accessories</SelectItem>
-                        <SelectItem value="Wellness">Wellness</SelectItem>
-                        <SelectItem value="Water Bottles">Water Bottles</SelectItem>
-                        <SelectItem value="Bundles">Bundles</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="side-status">Status</Label>
-                    <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="In Store">In Store</SelectItem>
-                        <SelectItem value="Removal Requested">Removal Requested</SelectItem>
-                        <SelectItem value="Removal Pending">Removal Pending</SelectItem>
-                        <SelectItem value="Phased Out">Phased Out</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="side-price">Price</Label>
-                    <Input
-                      id="side-price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="side-group">Group Name</Label>
-                    <Input
-                      id="side-group"
-                      value={formData.group_name}
-                      onChange={(e) => setFormData({ ...formData, group_name: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="side-color">Color/Variant</Label>
-                    <Input
-                      id="side-color"
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="side-hex">Hex Color</Label>
-                    <Input
-                      id="side-hex"
-                      value={formData.hex_color}
-                      onChange={(e) => setFormData({ ...formData, hex_color: e.target.value })}
-                      placeholder="#000000"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="side-link">Buy Link</Label>
-                    <Input
-                      id="side-link"
-                      value={formData.buy_link}
-                      onChange={(e) => setFormData({ ...formData, buy_link: e.target.value })}
-                      placeholder="https://..."
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="side-image">Product Image</Label>
-                  <div className="flex items-center gap-4">
-                    <Input
-                      id="side-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="flex-1"
-                    />
-                    {imagePreview && (
-                      <div className="w-16 h-16 border rounded overflow-hidden">
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Specifications Editor */}
-                <div>
-                  <Label>Specifications</Label>
-                  <div className="space-y-2 mt-2">
-                    {formData.specifications && Object.entries(formData.specifications).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <Input
-                          placeholder="Specification name (e.g., capacity, material)"
-                          value={key}
-                          onChange={(e) => {
-                            const newSpecs = { ...formData.specifications }
-                            delete newSpecs[key]
-                            newSpecs[e.target.value] = value
-                            setFormData({ ...formData, specifications: newSpecs })
-                          }}
-                          className="flex-1"
-                        />
-                        <Input
-                          placeholder="Value (e.g., 40 oz, Stainless Steel)"
-                          value={Array.isArray(value) ? value.join(', ') : String(value)}
-                          onChange={(e) => {
-                            setFormData({
-                              ...formData,
-                              specifications: { ...formData.specifications, [key]: e.target.value }
-                            })
-                          }}
-                          className="flex-1"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const newSpecs = { ...formData.specifications }
-                            delete newSpecs[key]
-                            setFormData({ ...formData, specifications: newSpecs })
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setFormData({
-                          ...formData,
-                          specifications: {
-                            ...formData.specifications,
-                            ['']: ''
-                          }
-                        })
+              <div className="space-y-2">
+                {productsInGroup.map((product, index) => (
+                  <Card key={product.id} className="p-4 group">
+                    <div
+                      className="flex items-center gap-4"
+                      draggable
+                      onDragStart={() => setDraggingId(product.id)}
+                      onDragEnd={() => setDraggingId(null)}
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault()
+                        reorderGroupAndPersist(groupName, product.id)
                       }}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Specification
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={closeSideEditor}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={updateProductMutation.isPending}>
-                    {updateProductMutation.isPending ? 'Updating...' : 'Save Changes'}
-                  </Button>
-                </div>
-              </form>
+                      {sortBy === 'manual' && (
+                        <div className="w-8 h-8 rounded-full bg-muted border flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                          {index + 1}
+                        </div>
+                      )}
+                      <div className="w-16 h-16 bg-muted/30 rounded-lg flex-shrink-0">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageIcon className="h-6 w-6 text-muted-foreground/40" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h3 className="font-semibold truncate">{product.name}</h3>
+                            <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="secondary" className="text-xs">{product.category}</Badge>
+                              <Badge
+                                className={`text-xs ${
+                                  product.status === 'In Store' ? 'bg-green-500' :
+                                  product.status === 'Removal Requested' ? 'bg-red-500' :
+                                  product.status === 'Removal Pending' ? 'bg-orange-500' :
+                                  product.status === 'Phased Out' ? 'bg-gray-500' :
+                                  'bg-yellow-500'
+                                }`}
+                              >
+                                {product.status}
+                              </Badge>
+                              {product.color && (
+                                <div className="flex items-center gap-1">
+                                  {product.hex_color && (
+                                    <div
+                                      className="w-3 h-3 rounded border border-border"
+                                      style={{ backgroundColor: product.hex_color }}
+                                    />
+                                  )}
+                                  <span className="text-xs text-muted-foreground">{product.color}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-glacier">${product.price.toFixed(2)}</div>
+                            <div className="flex gap-1 mt-2">
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    moveVariant(groupName, product.id, 'up')
+                                  }}
+                                  disabled={productsInGroup.findIndex(p => p.id === product.id) === 0}
+                                >
+                                  <MoveUp className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    moveVariant(groupName, product.id, 'down')
+                                  }}
+                                  disabled={productsInGroup.findIndex(p => p.id === product.id) === productsInGroup.length - 1}
+                                >
+                                  <MoveDown className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(product)}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDelete(product.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       )}
-
-      {/* Edit Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
-          </DialogHeader>
-          {editingProduct && (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-name">Product Name</Label>
-                  <Input
-                    id="edit-name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-sku">SKU</Label>
-                  <Input
-                    id="edit-sku"
-                    value={formData.sku}
-                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="edit-description">Description</Label>
-                <Textarea
-                  id="edit-description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="edit-category">Category</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Accessories">Accessories</SelectItem>
-                      <SelectItem value="Wellness">Wellness</SelectItem>
-                      <SelectItem value="Water Bottles">Water Bottles</SelectItem>
-                      <SelectItem value="Bundles">Bundles</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="edit-status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="In Store">In Store</SelectItem>
-                      <SelectItem value="Out of Stock">Out of Stock</SelectItem>
-                      <SelectItem value="Removal Requested">Removal Requested</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="edit-price">Price</Label>
-                  <Input
-                    id="edit-price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-group_name">Group Name</Label>
-                  <Input
-                    id="edit-group_name"
-                    value={formData.group_name}
-                    onChange={(e) => setFormData({ ...formData, group_name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-color">Color/Variant</Label>
-                  <Input
-                    id="edit-color"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-hex_color">Hex Color</Label>
-                  <Input
-                    id="edit-hex_color"
-                    value={formData.hex_color}
-                    onChange={(e) => setFormData({ ...formData, hex_color: e.target.value })}
-                    placeholder="#000000"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-buy_link">Buy Link</Label>
-                  <Input
-                    id="edit-buy_link"
-                    value={formData.buy_link}
-                    onChange={(e) => setFormData({ ...formData, buy_link: e.target.value })}
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="edit-image">Product Image</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="edit-image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="flex-1"
-                  />
-                  {imagePreview && (
-                    <div className="w-16 h-16 border rounded overflow-hidden">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Specifications Editor */}
-              <div>
-                <Label>Specifications</Label>
-                <div className="space-y-2 mt-2">
-                  {formData.specifications && Object.entries(formData.specifications).map(([key, value]) => (
-                    <div key={key} className="flex gap-2">
-                      <Input
-                        placeholder="Specification name (e.g., capacity, material)"
-                        value={key}
-                        onChange={(e) => {
-                          const newSpecs = { ...formData.specifications }
-                          delete newSpecs[key]
-                          newSpecs[e.target.value] = value
-                          setFormData({ ...formData, specifications: newSpecs })
-                        }}
-                        className="flex-1"
-                      />
-                      <Input
-                        placeholder="Value (e.g., 40 oz, Stainless Steel)"
-                        value={Array.isArray(value) ? value.join(', ') : String(value)}
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            specifications: { ...formData.specifications, [key]: e.target.value }
-                          })
-                        }}
-                        className="flex-1"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const newSpecs = { ...formData.specifications }
-                          delete newSpecs[key]
-                          setFormData({ ...formData, specifications: newSpecs })
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        specifications: {
-                          ...formData.specifications,
-                          ['']: ''
-                        }
-                      })
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Specification
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={updateProductMutation.isPending}>
-                  {updateProductMutation.isPending ? 'Updating...' : 'Update Product'}
-                </Button>
-              </div>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
       </div>
 
       <Footer />

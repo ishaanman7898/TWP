@@ -3,8 +3,7 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ProductService } from "@/services/ProductService";
-import { Product } from "@/lib/supabase";
+import { supabase, Product } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingCart, Minus, Plus } from "lucide-react";
@@ -24,8 +23,13 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const allProducts = await ProductService.getAllProducts();
-        setProducts(allProducts);
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setProducts((data || []) as Product[]);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -42,7 +46,12 @@ export default function ProductDetail() {
       const matchesSlug = slugify(p.group_name || p.name) === slug;
       return isVisible && matchesSlug;
     });
-    return group;
+    return group.sort((a, b) => {
+      const aOrder = a.variant_order ?? Number.POSITIVE_INFINITY;
+      const bOrder = b.variant_order ?? Number.POSITIVE_INFINITY;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return String(a.sku || '').localeCompare(String(b.sku || ''));
+    });
   }, [slug, products]);
 
   // Determine initial selection based on SKU param or default to first
@@ -283,7 +292,12 @@ function ExploreCard({ product, allProducts }: { product: Product, allProducts: 
     p.group_name === product.group_name && 
     p.status !== "Phased Out" && 
     p.status !== "Removal Requested"
-  );
+  ).sort((a, b) => {
+    const aOrder = a.variant_order ?? Number.POSITIVE_INFINITY;
+    const bOrder = b.variant_order ?? Number.POSITIVE_INFINITY;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return String(a.sku || '').localeCompare(String(b.sku || ''));
+  });
   const [hoveredVariant, setHoveredVariant] = useState(product);
 
   return (

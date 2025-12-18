@@ -35,6 +35,7 @@ export interface Database {
           group_name: string | null
           color: string | null
           hex_color: string | null
+          variant_order: number | null
           created_at: string
           updated_at: string
           created_by: string | null
@@ -53,6 +54,7 @@ export interface Database {
           group_name?: string | null
           color?: string | null
           hex_color?: string | null
+          variant_order?: number | null
           created_at?: string
           updated_at?: string
           created_by?: string | null
@@ -71,6 +73,7 @@ export interface Database {
           group_name?: string | null
           color?: string | null
           hex_color?: string | null
+          variant_order?: number | null
           created_at?: string
           updated_at?: string
           created_by?: string | null

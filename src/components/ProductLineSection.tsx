@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Product } from "@/lib/supabase";
+import type { Product as SupabaseProduct } from "@/lib/supabase";
+import type { Product as StaticProduct } from "@/data/products";
+
+type Variant = (SupabaseProduct | StaticProduct) & Record<string, any>;
 
 interface ProductLineSectionProps {
-  variants: Product[];
+  variants: Variant[];
   index: number;
   addToCart: (item: { name: string; link: string; price: number; image?: string }) => void;
   sectionId: string;
@@ -24,13 +27,39 @@ export function ProductLineSection({
 }: ProductLineSectionProps) {
   const isEven = index % 2 === 0;
 
+  const normalizedVariants = useMemo(() => {
+    const mapped = variants.map((v) => {
+      const groupName = v.group_name ?? v.groupName ?? v.name;
+      const buyLink = v.buy_link ?? v.buyLink ?? v.link;
+      const image = v.image_url ?? v.image;
+      const hexColor = v.hex_color ?? v.hexColor ?? null;
+      const variantOrder = v.variant_order ?? v.variantOrder ?? null;
+
+      return {
+        ...v,
+        groupName,
+        buyLink,
+        image,
+        hexColor,
+        variantOrder,
+      };
+    });
+
+    return mapped.sort((a, b) => {
+      const aOrder = a.variantOrder ?? Number.POSITIVE_INFINITY;
+      const bOrder = b.variantOrder ?? Number.POSITIVE_INFINITY;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return String(a.sku || "").localeCompare(String(b.sku || ""));
+    });
+  }, [variants]);
+
   const displayVariants = useMemo(() => {
-    const filtered = variants.filter((variant) => variant.hex_color && variant.color);
+    const filtered = normalizedVariants.filter((variant) => variant.hexColor && variant.color);
     if (filtered.length === 0) {
-      return variants;
+      return normalizedVariants;
     }
     return filtered;
-  }, [variants]);
+  }, [normalizedVariants]);
 
   const [selectedVariant, setSelectedVariant] = useState(displayVariants[0]);
   const [quantity, setQuantity] = useState(1);
@@ -44,9 +73,9 @@ export function ProductLineSection({
     for (let i = 0; i < quantity; i++) {
       addToCart({
         name: selectedVariant.name,
-        link: selectedVariant.buy_link,
+        link: selectedVariant.buyLink,
         price: selectedVariant.price,
-        image: selectedVariant.image_url,
+        image: selectedVariant.image,
       });
     }
     setQuantity(1);
@@ -76,11 +105,11 @@ export function ProductLineSection({
             )}
           >
             <div className="relative w-full max-w-md group">
-              <Link to={`/product/${slugify(selectedVariant.group_name || selectedVariant.name)}?sku=${selectedVariant.sku}`}>
-                {selectedVariant.image_url && (
+              <Link to={`/product/${slugify(selectedVariant.groupName || selectedVariant.name)}?sku=${selectedVariant.sku}`}>
+                {selectedVariant.image && (
                   <img
-                    key={selectedVariant.image_url}
-                    src={selectedVariant.image_url}
+                    key={selectedVariant.image}
+                    src={selectedVariant.image}
                     alt={selectedVariant.name}
                     loading="lazy"
                     className="w-full h-auto object-contain drop-shadow-2xl transition-transform duration-300 group-hover:scale-105"
@@ -103,10 +132,10 @@ export function ProductLineSection({
             <div className="space-y-6">
               <div>
                 <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold mb-4 tracking-tight">
-                  {selectedVariant.group_name || selectedVariant.name}
+                  {selectedVariant.groupName || selectedVariant.name}
                 </h2>
                 <p className="text-lg text-white/70 font-light leading-relaxed max-w-lg">
-                  {selectedVariant.description || lineDescription}
+                  {lineDescription}
                 </p>
               </div>
 
@@ -131,12 +160,12 @@ export function ProductLineSection({
                           selectedVariant.id === variant.id
                             ? "border-white scale-110"
                             : "border-white/30 hover:border-white/60",
-                          variant.hex_color === "#FFFFFF" && "bg-white border-white"
+                          variant.hexColor === "#FFFFFF" && "bg-white border-white"
                         )}
                         style={{
                           backgroundColor:
-                            variant.hex_color !== "#FFFFFF" ? variant.hex_color : undefined,
-                          backgroundImage: (variant.category === "Supplements" || variant.category === "Wellness") && !variant.hex_color ? "linear-gradient(45deg, #333, #666)" : undefined
+                            variant.hexColor !== "#FFFFFF" ? variant.hexColor : undefined,
+                          backgroundImage: (variant.category === "Supplements" || variant.category === "Wellness") && !variant.hexColor ? "linear-gradient(45deg, #333, #666)" : undefined
                         }}
                         title={variant.color}
                       />
@@ -200,7 +229,7 @@ export function ProductLineSection({
                     <p className="text-xs text-white/60 uppercase tracking-widest mb-1">
                       Group
                     </p>
-                    <p className="text-lg font-semibold">{selectedVariant.group_name || selectedVariant.name}</p>
+                    <p className="text-lg font-semibold">{selectedVariant.groupName || selectedVariant.name}</p>
                   </div>
                 </div>
               </div>

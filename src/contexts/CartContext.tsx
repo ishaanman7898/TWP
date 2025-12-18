@@ -96,39 +96,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
         setIsCheckingOut(true);
 
-        // Flatten cart items based on quantity
-        const items = cart.flatMap(item =>
-            Array(item.quantity || 1).fill({ name: item.name, url: item.link })
-        );
-
-        try {
-            const response = await fetch("http://localhost:3000/checkout", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ items }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to start checkout process");
-            }
-
-            // The server responds immediately, but the process continues in the background.
-            // We can keep the loading state for a bit or just finish.
-            // Since the server opens the browser, we can probably just reset the state.
-
-            // Optional: Wait a bit to show the "Processing" UI
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            setIsCheckingOut(false);
-            // clearCart(); // Optional: clear cart after successful handoff? User might want to keep it if it fails.
-
-        } catch (error) {
-            console.error("Checkout error:", error);
-            alert("Failed to connect to the checkout helper. Make sure the helper app is running.");
-            setIsCheckingOut(false);
-        }
+        // Navigate to checkout processing page
+        window.location.href = "/checkout-processing";
     };
 
     return (

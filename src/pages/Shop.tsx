@@ -5,8 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ProductService } from "@/services/ProductService";
-import { Product } from "@/lib/supabase";
+import { supabase, Product } from "@/lib/supabase";
 import { Search, ShoppingBag, ArrowUpDown, ShoppingCart, ChevronDown, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
@@ -21,8 +20,21 @@ const normalizeProduct = (product: any) => {
     buyLink: product.buy_link || product.buyLink,
     image: product.image_url || product.image,
     groupName: product.group_name || product.groupName,
-    hexColor: product.hex_color || product.hexColor
+    // Keep BOTH normalized + raw keys so downstream UI can safely read either.
+    hexColor: product.hex_color ?? product.hexColor ?? null,
+    hex_color: product.hex_color ?? product.hexColor ?? null,
+    variantOrder: product.variant_order ?? product.variantOrder ?? null,
+    variant_order: product.variant_order ?? product.variantOrder ?? null
   };
+};
+
+const sortVariants = (variants: any[]) => {
+  return [...variants].sort((a, b) => {
+    const aOrder = a.variantOrder ?? Number.POSITIVE_INFINITY;
+    const bOrder = b.variantOrder ?? Number.POSITIVE_INFINITY;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return String(a.sku || '').localeCompare(String(b.sku || ''));
+  });
 };
 
 const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -61,13 +73,23 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsData, categoriesData] = await Promise.all([
-          ProductService.getAllProducts(),
-          ProductService.getCategories()
-        ]);
-        setSupabaseProducts(productsData);
+        const { data: productsData, error: productsError } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('products')
+          .select('category');
+
+        if (productsError) throw productsError;
+        if (categoriesError) throw categoriesError;
+
+        setSupabaseProducts(productsData || []);
+        
         // Filter out Accessories from categories
-        setCategories(categoriesData.filter(cat => cat !== 'Accessories'));
+        const categories = [...new Set(categoriesData?.map(item => item.category).filter(Boolean))];
+        setCategories(categories.filter(cat => cat !== 'Accessories'));
       } catch (error) {
         console.error('Error fetching data from Supabase:', error);
       } finally {
@@ -139,7 +161,7 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
       groups[key].push(product);
     });
 
-    return Object.values(groups);
+    return Object.values(groups).map((group) => sortVariants(group));
   }, [filteredAndSortedProducts]);
 
   return (
@@ -419,12 +441,14 @@ function ProductCard({ variants, index }: { variants: any[]; index: number }) {
                   }}
                   className={cn(
                     "w-6 h-6 rounded-full border border-white/30 transition-transform hover:scale-110 focus:outline-none shadow-sm flex-none",
-                    variant.hexColor === "#FFFFFF" && "bg-white",
-                    !variant.hexColor && "bg-white/10",
+                    (variant.hexColor ?? variant.hex_color) === "#FFFFFF" && "bg-white",
+                    !(variant.hexColor ?? variant.hex_color) && "bg-white/10",
                   )}
                   style={{
-                    backgroundColor: variant.hexColor || undefined,
-                    backgroundImage: !variant.hexColor ? 'linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0.45))' : undefined,
+                    backgroundColor: (variant.hexColor ?? variant.hex_color) || undefined,
+                    backgroundImage: !(variant.hexColor ?? variant.hex_color)
+                      ? 'linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0.45))'
+                      : undefined,
                   }}
                 />
               ))}
