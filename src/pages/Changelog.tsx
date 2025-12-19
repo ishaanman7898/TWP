@@ -7,6 +7,25 @@ import { ArrowLeft } from "lucide-react";
 export default function Changelog() {
     const changes = [
         {
+            version: "1.9.2",
+            date: "December 18, 2025",
+            type: "Major Updates",
+            items: [
+                "Replaced Shipments tab with Inventory tab in Product Management for better stock tracking.",
+                "Added session management with 30-minute auto-logout for security on Product Management page.",
+                "Removed Sort By controls - Product Management now always defaults to manual variant ordering.",
+                "Expanded Shop page grid from 4 to 3 columns with increased card height (550px) for better image visibility.",
+                "Updated image upload system to use email-product-pictures bucket with automatic SKU-based naming ({SKU}.jpg).",
+                "Created SQL trigger to auto-update product image URLs when images are uploaded.",
+                "Added Inventory table view showing stock levels, status badges (In Stock/Low Stock/Out of Stock/Backordered), and stock tracking.",
+                "Fixed Supplements page to show all Wellness category products (removed group_name filter restriction).",
+                "Added 'View Supplements' link in Product Management when Wellness category is selected.",
+                "Improved inventory display with stock_bought, stock_left, and status indicators.",
+                "Changed image compression from PNG to JPEG format for smaller file sizes.",
+                "Added persistent session tracking with activity detection (mouse, keyboard, scroll, touch)."
+            ]
+        },
+        {
             version: "1.9.1",
             date: "December 18, 2025",
             type: "Minor Updates",

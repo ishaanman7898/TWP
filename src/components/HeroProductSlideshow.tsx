@@ -29,7 +29,7 @@ export function HeroProductSlideshow() {
         const result: typeof products = []
         
         // Add 3 water bottles
-        const waterBottles = products.filter(p => p.category === 'Water Bottles' && p.image_url).slice(0, 3)
+        const waterBottles = products.filter(p => p.category === 'Water Bottles' && p.image_url).slice(1, 3)
         result.push(...waterBottles)
         
         // Add 3 wellness products
