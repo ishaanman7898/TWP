@@ -48,7 +48,8 @@ export default function SupplementsPage() {
             }
             groups[groupName].push(product);
         });
-        return Object.values(groups);
+        // Filter out groups that have no valid variants after filtering
+        return Object.values(groups).filter(group => group.length > 0);
     }, [wellnessProducts]);
 
     return (

@@ -7,6 +7,19 @@ import { ArrowLeft } from "lucide-react";
 export default function Changelog() {
     const changes = [
         {
+            version: "2.0.0",
+            date: "December 19, 2025",
+            type: "Major Updates",
+            items: [
+                "Fixed product line pages (Water Bottles, Supplements) to properly filter out phased out variants from display.",
+                "Updated ProductLineSection component to exclude 'Phased Out', 'Removal Requested', and 'Removal Pending' products.",
+                "Added cache-busting to product images - images now reload from Supabase on every page navigation.",
+                "Fixed issue where phased out water bottle variants still appeared on product line pages despite being removed from shop.",
+                "Ensured product management status changes propagate to all product pages, not just the main shop page.",
+                "Change Blue Razzberry images and fix sql for Supabase (water bottles got mislabeled) (Ishaan)"
+            ]
+        },
+        {
             version: "1.9.2",
             date: "December 18, 2025",
             type: "Major Updates",

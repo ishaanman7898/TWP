@@ -28,22 +28,32 @@ export function ProductLineSection({
   const isEven = index % 2 === 0;
 
   const normalizedVariants = useMemo(() => {
-    const mapped = variants.map((v) => {
-      const groupName = v.group_name ?? v.groupName ?? v.name;
-      const buyLink = v.buy_link ?? v.buyLink ?? v.link;
-      const image = v.image_url ?? v.image;
-      const hexColor = v.hex_color ?? v.hexColor ?? null;
-      const variantOrder = v.variant_order ?? v.variantOrder ?? null;
+    const mapped = variants
+      .filter((v) => {
+        // Filter out phased out and removal products
+        const status = v.status;
+        return status !== "Phased Out" && 
+               status !== "Removal Requested" && 
+               status !== "Removal Pending";
+      })
+      .map((v) => {
+        const groupName = v.group_name ?? v.groupName ?? v.name;
+        const buyLink = v.buy_link ?? v.buyLink ?? v.link;
+        // Add cache-busting timestamp to image URLs
+        const baseImage = v.image_url ?? v.image;
+        const image = baseImage ? `${baseImage}?t=${Date.now()}` : baseImage;
+        const hexColor = v.hex_color ?? v.hexColor ?? null;
+        const variantOrder = v.variant_order ?? v.variantOrder ?? null;
 
-      return {
-        ...v,
-        groupName,
-        buyLink,
-        image,
-        hexColor,
-        variantOrder,
-      };
-    });
+        return {
+          ...v,
+          groupName,
+          buyLink,
+          image,
+          hexColor,
+          variantOrder,
+        };
+      });
 
     return mapped.sort((a, b) => {
       const aOrder = a.variantOrder ?? Number.POSITIVE_INFINITY;

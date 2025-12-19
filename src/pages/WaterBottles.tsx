@@ -28,7 +28,12 @@ export default function WaterBottlesPage() {
     }, []);
 
     const waterBottleProducts = useMemo(() => {
-        return products.filter((product) => product.category === "Water Bottles");
+        return products.filter((product) => 
+            product.category === "Water Bottles" &&
+            product.status !== "Phased Out" && 
+            product.status !== "Removal Requested" && 
+            product.status !== "Removal Pending"
+        );
     }, [products]);
 
     // Group products by groupName
@@ -43,7 +48,8 @@ export default function WaterBottlesPage() {
             groups[groupName].push(product);
         });
 
-        return Object.values(groups);
+        // Filter out groups that have no valid variants after filtering
+        return Object.values(groups).filter(group => group.length > 0);
     }, [waterBottleProducts]);
 
     return (

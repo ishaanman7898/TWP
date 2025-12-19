@@ -31,7 +31,12 @@ export default function BundlesPage() {
     }, []);
 
     const bundlesProducts = useMemo(() => {
-        return products.filter((product) => product.category === "Bundles");
+        return products.filter((product) => 
+            product.category === "Bundles" &&
+            product.status !== "Phased Out" && 
+            product.status !== "Removal Requested" && 
+            product.status !== "Removal Pending"
+        );
     }, [products]);
 
     const groupedProducts = useMemo(() => {
@@ -43,7 +48,8 @@ export default function BundlesPage() {
             }
             groups[groupName].push(product);
         });
-        return Object.values(groups);
+        // Filter out groups that have no valid variants after filtering
+        return Object.values(groups).filter(group => group.length > 0);
     }, [bundlesProducts]);
 
     return (

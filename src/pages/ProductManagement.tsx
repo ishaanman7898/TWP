@@ -103,7 +103,14 @@ const ProductManagement = () => {
         .order('created_at', { ascending: false })
       
       if (error) throw error
-      return data as Product[]
+      
+      // Add cache-busting timestamp to image URLs
+      const productsWithFreshImages = (data || []).map(product => ({
+        ...product,
+        image_url: product.image_url ? `${product.image_url}?t=${Date.now()}` : product.image_url
+      }));
+      
+      return productsWithFreshImages as Product[]
     }
   })
 
