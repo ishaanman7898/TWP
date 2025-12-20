@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase, Product, ProductInsert, ProductUpdate } from '@/lib/supabase'
+import { ProductService } from '@/services/ProductService'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { Button } from '@/components/ui/button'
@@ -85,6 +86,7 @@ const ProductManagement = () => {
       if (firstError) throw firstError
     },
     onSuccess: () => {
+      ProductService.clearCache(); // Clear product cache
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Variant order saved!')
     },
@@ -194,6 +196,7 @@ const ProductManagement = () => {
       return data?.[0] || null
     },
     onSuccess: () => {
+      ProductService.clearCache(); // Clear product cache
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Product created successfully!')
       resetForm()
@@ -221,6 +224,7 @@ const ProductManagement = () => {
       return data[0]
     },
     onSuccess: () => {
+      ProductService.clearCache(); // Clear product cache
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Product updated successfully!')
       setEditingProduct(null)
@@ -244,6 +248,7 @@ const ProductManagement = () => {
       if (error) throw error
     },
     onSuccess: () => {
+      ProductService.clearCache(); // Clear product cache
       queryClient.invalidateQueries({ queryKey: ['products'] })
       toast.success('Product deleted successfully!')
     },
