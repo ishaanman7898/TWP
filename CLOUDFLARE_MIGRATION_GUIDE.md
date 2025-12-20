@@ -63,7 +63,14 @@ dist
 
 **Root directory:** (leave empty)
 
-**Node version:** 18 or higher
+**Node version:** 18
+
+**IMPORTANT:** In **Environment variables** section, add this:
+```
+SKIP_DEPENDENCY_INSTALL = python
+```
+
+This tells Cloudflare to skip Python dependency installation (the `.py` files are just local helper scripts, not needed for deployment).
 
 ### Step 5: Add Environment Variables
 
