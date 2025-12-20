@@ -249,31 +249,31 @@ export function ProductLineSection({
               )}
 
               {/* Quantity and Add to Cart */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-start items-start">
-                <div className="flex items-center justify-between gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 sm:px-5 border border-white/20 h-12 w-full sm:w-auto">
+              <div className="flex flex-row gap-3 pt-2 justify-start items-center w-full sm:w-auto">
+                <div className="flex items-center justify-between gap-2 bg-white/10 backdrop-blur-md rounded-full px-3 sm:px-5 border border-white/20 h-12 w-auto">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                     aria-label="Decrease quantity"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
-                  <span className="w-8 text-center font-medium">{quantity}</span>
+                  <span className="w-6 sm:w-8 text-center font-medium text-sm sm:text-base">{quantity}</span>
                   <button
                     onClick={() => setQuantity(Math.min(99, quantity + 1))}
-                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-lg font-bold transition-colors"
                     aria-label="Increase quantity"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
 
                 <Button
                   size="lg"
-                  className="bg-white text-black hover:bg-white/90 font-bold text-lg rounded-full px-8 h-12 min-w-[180px] transition-all duration-300"
+                  className="bg-white text-black hover:bg-white/90 font-bold text-base sm:text-lg rounded-full px-6 sm:px-8 h-12 flex-1 sm:flex-initial sm:min-w-[180px] transition-all duration-300"
                   onClick={handleAddToCart}
                 >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Add to Cart
                 </Button>
               </div>

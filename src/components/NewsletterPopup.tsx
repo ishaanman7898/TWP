@@ -9,8 +9,22 @@ export function NewsletterPopup() {
     const location = useLocation();
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
+        // Check if mobile
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    useEffect(() => {
+        // Don't show on mobile
+        if (isMobile) return;
+
         // Check if user has already seen the popup
         const output = localStorage.getItem("newsletterPopupShown");
 
@@ -35,7 +49,7 @@ export function NewsletterPopup() {
                 document.removeEventListener("click", handleInteraction);
             };
         }
-    }, [location.pathname]);
+    }, [location.pathname, isMobile]);
 
     const handleClose = () => {
         setIsOpen(false);

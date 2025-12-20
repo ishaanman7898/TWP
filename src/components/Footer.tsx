@@ -1,5 +1,6 @@
 import { Instagram, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
+import { changelogData } from "@/data/changelog";
 
 // TikTok icon component (not in lucide-react)
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -44,10 +45,14 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  // Get latest version from changelog data
+  const latestVersion = changelogData[0];
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-8 mb-12">
+        {/* Desktop Footer */}
+        <div className="hidden md:grid grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-8 mb-12">
           {/* Brand */}
           <div className="col-span-2 border-r border-border pr-8">
             <div className="flex items-center gap-2 mb-4">
@@ -154,6 +159,30 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Mobile Footer - Simplified */}
+        <div className="md:hidden flex flex-col items-center text-center space-y-6 mb-12">
+          <div className="flex items-center gap-2">
+            <img src="https://quygevwkhlggdifdqqto.supabase.co/storage/v1/object/public/WebsiteLink/Thrive.png" alt="Thrive" className="h-16 w-auto object-contain" />
+          </div>
+          <p className="text-muted-foreground max-w-xs">
+            Premium wellness products designed for those who demand more from life.
+          </p>
+          <div className="flex items-center gap-4">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-primary/20 transition-colors"
+                aria-label={social.label}
+              >
+                <social.icon className="w-5 h-5" />
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border">
           <div className="flex flex-col gap-3 text-center">
@@ -165,10 +194,9 @@ export function Footer() {
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
               <Link to="/changelog" className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline">
-                v2.0.2 - Team Page & Infrastructure
+                v{latestVersion.version} - {latestVersion.type}
               </Link>
             </p>
-
           </div>
         </div>
       </div>

@@ -220,7 +220,7 @@ export default function CheckoutProcessing() {
     const isLeftPosition = status === "processing" || status === "complete";
     
     return (
-        <div className="fixed inset-0 z-[50] bg-background overflow-auto flex items-center justify-start" style={{paddingLeft: '6vw', paddingRight: '0'}}>
+        <div className="fixed inset-0 z-[50] bg-background overflow-auto flex items-center justify-center md:justify-start" style={{paddingLeft: '0', paddingRight: '0'}}>
             {/* Close Button */}
             <button
                 onClick={() => navigate("/cart")}
@@ -229,7 +229,7 @@ export default function CheckoutProcessing() {
                 <X className="w-6 h-6" />
             </button>
 
-            <div className="max-w-md w-full p-8 mx-16 my-10 bg-card shadow-xl border border-border rounded-2xl flex flex-col items-center">
+            <div className="max-w-md w-full p-6 sm:p-8 mx-4 sm:mx-16 my-10 bg-card shadow-xl border border-border rounded-2xl flex flex-col items-center">
                 <div className="flex flex-col items-center justify-center text-center w-full">
                     {status === "processing" && (
                         <>

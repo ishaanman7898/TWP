@@ -44,12 +44,15 @@ const Index = () => {
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 items-center gap-10">
             {/* Left: stacked text */}
-            <div className="text-left">
+            <div className="text-left lg:text-left text-center">
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight space-y-2">
-                <div>WE CREATE</div>
-                <div>INNOVATIVE</div>
-                <div>PRODUCTS THAT</div>
-                <div>MAKE WELLNESS</div>
+                <div className="hidden lg:block">WE CREATE</div>
+                <div className="hidden lg:block">INNOVATIVE</div>
+                <div className="hidden lg:block">PRODUCTS THAT</div>
+                <div className="hidden lg:block">MAKE WELLNESS</div>
+                {/* Mobile: Simplified text */}
+                <div className="lg:hidden text-5xl sm:text-6xl">THRIVE</div>
+                <div className="lg:hidden text-2xl sm:text-3xl text-white/80 mt-4">Premium wellness products</div>
                 <div><FlippingText /></div>
               </h2>
             </div>
