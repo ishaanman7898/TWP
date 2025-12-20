@@ -1,8 +1,6 @@
 import { supabase, Product } from '@/lib/supabase';
 
-// Cache configuration
-const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
-
+// Cache configuration - cache indefinitely until Supabase tells us to refresh
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -10,6 +8,34 @@ interface CacheEntry<T> {
 
 class CacheManager {
   private cache: Map<string, CacheEntry<any>> = new Map();
+  private realtimeSubscription: any = null;
+
+  constructor() {
+    this.setupRealtimeSubscription();
+  }
+
+  // Listen to Supabase realtime changes and auto-clear cache
+  private setupRealtimeSubscription() {
+    console.log('Setting up Supabase realtime subscription for products...');
+    
+    this.realtimeSubscription = supabase
+      .channel('products-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'products'
+        },
+        (payload) => {
+          console.log('Product change detected via Supabase Realtime:', payload.eventType);
+          this.clear();
+        }
+      )
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+      });
+  }
 
   set<T>(key: string, data: T): void {
     this.cache.set(key, {
@@ -21,18 +47,18 @@ class CacheManager {
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
     if (!entry) return null;
-
-    const isExpired = Date.now() - entry.timestamp > CACHE_DURATION;
-    if (isExpired) {
-      this.cache.delete(key);
-      return null;
-    }
-
     return entry.data as T;
   }
 
   clear(): void {
     this.cache.clear();
+    console.log('Product cache cleared due to Supabase update');
+  }
+
+  // Manual clear for Product Management page
+  manualClear(): void {
+    this.cache.clear();
+    console.log('Product cache manually cleared');
   }
 }
 
@@ -43,12 +69,12 @@ export class ProductService {
     // Check cache first
     const cachedProducts = cache.get<Product[]>('all_products');
     if (cachedProducts) {
-      console.log('Using cached products');
+      console.log('✓ Using cached products');
       return cachedProducts;
     }
 
     try {
-      console.log('Fetching products from Supabase');
+      console.log('→ Fetching products from Supabase');
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -62,7 +88,7 @@ export class ProductService {
         image_url: product.image_url ? `${product.image_url}?t=${Date.now()}` : product.image_url
       }));
       
-      // Store in cache
+      // Store in cache indefinitely (will be cleared by realtime subscription)
       cache.set('all_products', productsWithFreshImages);
       
       return productsWithFreshImages;
@@ -76,12 +102,12 @@ export class ProductService {
     // Check cache first
     const cachedCategories = cache.get<string[]>('categories');
     if (cachedCategories) {
-      console.log('Using cached categories');
+      console.log('✓ Using cached categories');
       return cachedCategories;
     }
 
     try {
-      console.log('Fetching categories from Supabase');
+      console.log('→ Fetching categories from Supabase');
       const { data, error } = await supabase
         .from('products')
         .select('category');
@@ -105,12 +131,12 @@ export class ProductService {
     const cacheKey = `category_${category}`;
     const cachedProducts = cache.get<Product[]>(cacheKey);
     if (cachedProducts) {
-      console.log(`Using cached products for category: ${category}`);
+      console.log(`✓ Using cached products for category: ${category}`);
       return cachedProducts;
     }
 
     try {
-      console.log(`Fetching products for category ${category} from Supabase`);
+      console.log(`→ Fetching products for category ${category} from Supabase`);
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -133,7 +159,6 @@ export class ProductService {
 
   // Method to manually clear cache (useful for Product Management)
   static clearCache(): void {
-    cache.clear();
-    console.log('Product cache cleared');
+    cache.manualClear();
   }
 }
