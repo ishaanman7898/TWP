@@ -51,7 +51,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 border-r border-border pr-8">
             <div className="flex items-center gap-2 mb-4">
-              <img src="/Thrive.png" alt="Thrive" className="h-16 w-auto object-contain" />
+              <img src="https://quygevwkhlggdifdqqto.supabase.co/storage/v1/object/public/WebsiteLink/Thrive.jpg" alt="Thrive" className="h-16 w-auto object-contain" />
             </div>
             <p className="text-muted-foreground mb-6 max-w-xs">
               Premium wellness products designed for those who demand more from life.

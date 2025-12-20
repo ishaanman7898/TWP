@@ -74,7 +74,7 @@ export function Hero() {
             playsInline
             preload="auto"
           >
-            <source src="/HeroVideo.mp4" type="video/mp4" />
+            <source src="https://quygevwkhlggdifdqqto.supabase.co/storage/v1/object/public/WebsiteLink/HeroVideo.mp4" type="video/mp4" />
           </video>
         </div>
         {/* Darker overlay for text readability */}
