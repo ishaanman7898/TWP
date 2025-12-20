@@ -6,6 +6,7 @@ import { ArrowLeft, Sparkles, Wrench, Rocket, Bug, Zap } from "lucide-react";
 const typeConfig: { [key: string]: { color: string; icon: any; bg: string } } = {
     "Major Update": { color: "text-purple-400", icon: Rocket, bg: "bg-purple-500/10 border-purple-500/20" },
     "Major Updates": { color: "text-purple-400", icon: Rocket, bg: "bg-purple-500/10 border-purple-500/20" },
+    "Infrastructure Migration": { color: "text-indigo-400", icon: Zap, bg: "bg-indigo-500/10 border-indigo-500/20" },
     "UI/UX Improvements": { color: "text-blue-400", icon: Sparkles, bg: "bg-blue-500/10 border-blue-500/20" },
     "Team Page & Infrastructure": { color: "text-emerald-400", icon: Zap, bg: "bg-emerald-500/10 border-emerald-500/20" },
     "Minor Updates": { color: "text-cyan-400", icon: Wrench, bg: "bg-cyan-500/10 border-cyan-500/20" },
@@ -20,6 +21,21 @@ const typeConfig: { [key: string]: { color: string; icon: any; bg: string } } = 
 
 export default function Changelog() {
     const changes = [
+        {
+            version: "2.1.0",
+            date: "December 20, 2025",
+            type: "Infrastructure Migration",
+            items: [
+                "Migrated from Vercel to Cloudflare Pages for unlimited bandwidth.",
+                "Removed unnecessary dependencies (ngrok, lovable-tagger, gm, sharp, express).",
+                "Optimized mobile responsiveness with adaptive text sizing and spacing.",
+                "Implemented lazy image loading for phased out products in Product Management.",
+                "Reordered navbar products dropdown: Bundles first, then Water Bottles, then Supplements.",
+                "Improved Supabase Realtime integration for instant cache updates.",
+                "Reduced bundle size and improved build performance.",
+                "All assets now served from Supabase Storage (90% bandwidth reduction)."
+            ]
+        },
         {
             version: "2.0.2",
             date: "December 19, 2025",
