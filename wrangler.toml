@@ -1,0 +1,5 @@
+name = "thrive-wellness"
+compatibility_date = "2025-12-20"
+
+[site]
+bucket = "./dist"
