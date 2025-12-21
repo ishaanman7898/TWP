@@ -71,6 +71,17 @@ export default function CheckoutProcessing() {
             const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=yes,status=no`;
 
             const firstUrl = `${items[0].url}?nocache=${Date.now()}`;
+            
+            // On mobile, open in same tab instead of popup
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+            
+            if (isMobile) {
+                // Open first item in same tab
+                window.location.href = firstUrl;
+                return;
+            }
+            
+            // Desktop: use popup
             const popup = window.open(firstUrl, "vei_checkout_window", features);
 
             if (!popup || popup.closed) {

@@ -28,12 +28,38 @@ export function Hero() {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    const playPromise = v.play();
-    if (playPromise && typeof (playPromise as any).then === "function") {
-      (playPromise as Promise<void>).catch(() => {
-        setPlaying(false);
-      });
-    }
+    
+    // Force video to load and play
+    v.load();
+    
+    // Try to play with user interaction fallback
+    const attemptPlay = () => {
+      const playPromise = v.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setPlaying(true);
+          })
+          .catch((error) => {
+            console.log("Autoplay prevented:", error);
+            setPlaying(false);
+            // Try again on first user interaction
+            const playOnInteraction = () => {
+              v.play().then(() => setPlaying(true)).catch(() => {});
+              document.removeEventListener('click', playOnInteraction);
+              document.removeEventListener('touchstart', playOnInteraction);
+            };
+            document.addEventListener('click', playOnInteraction, { once: true });
+            document.addEventListener('touchstart', playOnInteraction, { once: true });
+          });
+      }
+    };
+    
+    // Try immediately
+    attemptPlay();
+    
+    // Also try after a short delay
+    setTimeout(attemptPlay, 100);
   }, []);
 
   const togglePlay = () => {

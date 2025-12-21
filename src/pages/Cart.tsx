@@ -85,10 +85,10 @@ export default function Cart() {
                       key={index}
                       className="glass rounded-xl p-4 md:p-6 flex flex-col sm:flex-row gap-4"
                     >
-                      {/* Product Image Placeholder */}
-                      <div className="w-full sm:w-24 h-24 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      {/* Product Image with better sizing */}
+                      <div className="w-full sm:w-32 h-32 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                          <img src={item.image} alt={item.name} className="w-full h-full object-contain p-2" />
                         ) : (
                           <ShoppingBag className="w-8 h-8 text-muted-foreground" />
                         )}
