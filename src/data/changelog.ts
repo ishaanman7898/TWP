@@ -1,5 +1,19 @@
 export const changelogData = [
   {
+    version: "2.3.0",
+    date: "December 21, 2025",
+    type: "Bug Fixes & Cleanup",
+    items: [
+      "Fixed video autoplay with multiple play attempts and user interaction fallback.",
+      "Improved cart product images with larger size and better display.",
+      "Mobile checkout now uses same automated popup system as desktop.",
+      "Removed unused files: vercel.json, netlify.toml, ThriveSocial.png.",
+      "Cleaned up node_modules cache (~181 MB freed).",
+      "Removed 172 unused packages via npm prune.",
+      "Fixed Cloudflare Pages deployment configuration."
+    ]
+  },
+  {
     version: "2.1.1",
     date: "December 20, 2025",
     type: "Mobile UX & Checkout Improvements",
