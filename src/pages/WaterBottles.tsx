@@ -6,6 +6,7 @@ import { Product } from "@/lib/supabase";
 import { ChevronDown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { ProductLineSection } from "@/components/ProductLineSection";
+import { HeroTubesCursor } from "@/components/HeroTubesCursor";
 
 export default function WaterBottlesPage() {
     const { addToCart } = useCart();
@@ -58,7 +59,8 @@ export default function WaterBottlesPage() {
 
             {/* Hero Section - Apple Style */}
             <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/60 via-black to-black z-0"></div>
+                <HeroTubesCursor theme="blue" />
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-black/80 to-black z-[1]"></div>
 
                 <div className="relative z-10 text-center px-4">
                     <h1 className="font-display text-6xl md:text-8xl font-bold mb-6 tracking-tight">

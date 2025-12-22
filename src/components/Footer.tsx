@@ -9,35 +9,6 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const footerLinks = {
-  productLines: [
-    { label: "Water Bottles", href: "/shop/water-bottles" },
-    { label: "Electrolytes", href: "/shop/electrolytes" },
-    { label: "Supplements", href: "/shop/supplements" },
-
-    { label: "Bundles", href: "/shop/bundles" },
-  ],
-  company: [
-    { label: "About Us", href: "/about" },
-    { label: "Our Mission", href: "/mission" },
-    { label: "Our Team", href: "/team" },
-  ],
-  support: [
-    { label: "FAQ", href: "/faq" },
-    { label: "Shipping", href: "/shipping" },
-    { label: "Contact Us", href: "/contact" },
-    
-  ],
-  legal: [
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Privacy Policy", href: "/privacy" },
-  ],
-  teamApps: [
-    { label: "Team Login", href: "/login" },
-    { label: "Email Management", href: "https://thrive-ve.streamlit.app/" },
-  ],
-};
-
 const socialLinks = [
   { icon: Instagram, href: "https://www.instagram.com/vei.thrive/", label: "Instagram" },
   { icon: TikTokIcon, href: "https://www.tiktok.com/@vei.thriveee", label: "TikTok" },
@@ -47,6 +18,32 @@ const socialLinks = [
 export function Footer() {
   // Get latest version from changelog data
   const latestVersion = changelogData[0];
+
+  const footerLinks = {
+    productLines: [
+      { label: "Water Bottles", href: "/shop/water-bottles" },
+      { label: "Supplements", href: "/shop/supplements" },
+      { label: "Bundles", href: "/shop/bundles" },
+    ],
+    company: [
+      { label: "About Us", href: "/about" },
+      { label: "Our Mission", href: "/mission" },
+      { label: "Our Team", href: "/team" },
+    ],
+    support: [
+      { label: "FAQ", href: "/faq" },
+      { label: "Shipping", href: "/shipping" },
+      { label: "Contact Us", href: "/contact" },
+    ],
+    legal: [
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+    ],
+    teamApps: [
+      { label: "Team Login", href: "/login" },
+      { label: "Email Management", href: "https://thrive-ve.streamlit.app/" },
+    ],
+  };
 
   return (
     <footer className="bg-card border-t border-border">
@@ -190,7 +187,7 @@ export function Footer() {
               © 2025 Thrive Wellness. All rights reserved.
             </p>
             <p className="text-xs text-muted-foreground italic">
-              Disclaimer: This Virtual Enterprise online store is for educational purposes only (Thrive 2025-2026)
+              These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
               <Link to="/changelog" className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline">

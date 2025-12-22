@@ -30,10 +30,10 @@ export default function About() {
   }, []);
 
   const values = [
-    { icon: Leaf, title: "Pure & Natural", desc: "Only the finest natural ingredients" },
-    { icon: Shield, title: "Lab Tested", desc: "Third-party verified quality" },
-    { icon: Heart, title: "Customer First", desc: "Your wellness is our priority" },
-    { icon: Zap, title: "Real Results", desc: "Science-backed formulas" },
+    { icon: Leaf, title: "Pure & Natural", desc: "Made with the finest natural ingredients" },
+    { icon: Shield, title: "Lab Tested", desc: "Rigorously tested for quality and safety" },
+    { icon: Heart, title: "Customer First", desc: "Your satisfaction is our priority" },
+    { icon: Zap, title: "Real Results", desc: "Proven effectiveness you can feel" },
   ];
 
   const stats = [
@@ -53,9 +53,9 @@ export default function About() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-glacier/10 via-transparent to-transparent" />
 
         <div className="relative z-10 text-center px-4">
-          <h1 className="text-6xl md:text-8xl font-black tracking-wide mb-6">About Us</h1>
+          <h1 className="text-6xl md:text-8xl font-black tracking-wide mb-6">About Thrive</h1>
           <p className="text-xl text-white/60 max-w-md mx-auto">
-            We dreamt it, we built it, and we shipped it.
+            Discover our mission to revolutionize wellness
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function About() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-black mb-8">Our Story</h2>
           <p className="text-lg text-white/60 leading-relaxed mb-6">
-            Thrive started with a simple frustration: the wellness industry was full of empty promises. We set out to create something different—pure ingredients, real science, actual results. No shortcuts, no compromises. Based in Aurora, Illinois, we've been here for one year and counting, building a wellness revolution one product at a time.
+            At Thrive, we believe wellness should be accessible to everyone. Founded with a passion for health and sustainability, we create premium products that make a real difference in people's lives.
           </p>
         </div>
       </section>
@@ -118,7 +118,7 @@ export default function About() {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-black mb-6">Ready to Thrive?</h2>
           <p className="text-white/60 mb-10">
-            Join thousands who've made the switch to wellness that works.
+            Join thousands of customers who've transformed their wellness journey
           </p>
           <Button 
             variant="hero" 

@@ -5,41 +5,6 @@ import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 
-const navLinks = [
-  {
-    label: "Products",
-    href: "/shop",
-    hasDropdown: true,
-    dropdownItems: [
-      { label: "Bundles", href: "/shop/bundles" },
-      { label: "Water Bottles", href: "/shop/water-bottles" },
-      { label: "Supplements", href: "/shop/supplements" },
-      { label: "All Products", href: "/shop" },
-    ]
-  },
-  {
-    label: "Company",
-    href: "/about",
-    hasDropdown: true,
-    dropdownItems: [
-      { label: "About Us", href: "/about" },
-      { label: "Our Mission", href: "/mission" },
-      { label: "Our Team", href: "/team" },
-      { label: "Newsletter", href: "/newsletter" },
-    ]
-  },
-  {
-    label: "Support",
-    href: "/faq",
-    hasDropdown: true,
-    dropdownItems: [
-      { label: "FAQ", href: "/faq" },
-      { label: "Shipping", href: "/shipping" },
-      { label: "Contact Us", href: "/contact" },
-    ]
-  },
-];
-
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -47,6 +12,41 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { cart } = useCart();
   const totalItems = cart.length;
+
+  const navLinks = [
+    {
+      label: "Products",
+      href: "/shop",
+      hasDropdown: true,
+      dropdownItems: [
+        { label: "Bundles", href: "/shop/bundles" },
+        { label: "Water Bottles", href: "/shop/water-bottles" },
+        { label: "Supplements", href: "/shop/supplements" },
+        { label: "All Products", href: "/shop" },
+      ]
+    },
+    {
+      label: "Company",
+      href: "/about",
+      hasDropdown: true,
+      dropdownItems: [
+        { label: "About Us", href: "/about" },
+        { label: "Our Mission", href: "/mission" },
+        { label: "Our Team", href: "/team" },
+        { label: "Newsletter", href: "/newsletter" },
+      ]
+    },
+    {
+      label: "Support",
+      href: "/faq",
+      hasDropdown: true,
+      dropdownItems: [
+        { label: "FAQ", href: "/faq" },
+        { label: "Shipping", href: "/shipping" },
+        { label: "Contact Us", href: "/contact" },
+      ]
+    },
+  ];
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -132,7 +132,7 @@ export function Navbar() {
                             "bg-black/90 backdrop-blur-xl"
                           )}
                         >
-                          {link.dropdownItems?.map((item) => (
+                          {link.dropdownItems?.map((item: any) => (
                             <a
                               key={item.label}
                               href={item.href}
@@ -224,7 +224,7 @@ export function Navbar() {
                   {/* Mobile Dropdown */}
                   {link.hasDropdown && mobileActiveDropdown === link.label && (
                     <div className="bg-white/5 rounded-lg ml-4 mt-1 mb-2 overflow-hidden">
-                      {link.dropdownItems?.map((item) => (
+                      {link.dropdownItems?.map((item: any) => (
                         <a
                           key={item.label}
                           href={item.href}

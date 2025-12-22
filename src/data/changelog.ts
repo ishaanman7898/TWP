@@ -1,5 +1,31 @@
 export const changelogData = [
   {
+    version: "2.4.1",
+    date: "December 21, 2025",
+    type: "Minor Tweaks & Patches",
+    items: [
+      "Removed multi-language translation system (react-i18next).",
+      "Removed language detection popup and toast notifications.",
+      "Removed Google Translate integration.",
+      "Simplified codebase by removing all translation dependencies.",
+      "Reverted to English-only interface for cleaner user experience."
+    ]
+  },
+  {
+    version: "2.4.0",
+    date: "December 21, 2025",
+    type: "Minor Tweaks & Patches",
+    items: [
+      "Added multi-language support with react-i18next for 12 languages.",
+      "Implemented IP-based language detection for international visitors.",
+      "Created beautiful language selector toast with flag emojis.",
+      "Toast only appears for non-English speaking countries.",
+      "Added dev testing mode for language toast (VITE_FORCE_LANGUAGE_TOAST).",
+      "Translation system ready for whole-website localization.",
+      "Minor UI improvements and code cleanup."
+    ]
+  },
+  {
     version: "2.3.0",
     date: "December 21, 2025",
     type: "Bug Fixes & Cleanup",

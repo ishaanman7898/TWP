@@ -7,27 +7,27 @@ import { ChevronDown } from "lucide-react";
 import { HeroProductSlideshow } from "@/components/HeroProductSlideshow";
 import { FlippingText } from "@/components/FlippingText";
 
-const thriveFactors = [
-  {
-    title: "MATERIALS",
-    content: "We use only premium, food-grade stainless steel and BPA-free materials. Every product is designed with durability and safety in mind, ensuring your wellness journey is built on a solid foundation."
-  },
-  {
-    title: "SUSTAINABILITY",
-    content: "Our commitment to the planet drives every decision. From recyclable packaging to carbon-neutral shipping, we're dedicated to reducing our environmental footprint while helping you reduce yours."
-  },
-  {
-    title: "CUSTOMIZATION",
-    content: "Your wellness journey is unique, and your products should be too. Choose from a range of colors, sizes, and configurations to find the perfect fit for your lifestyle."
-  },
-  {
-    title: "CONVENIENCE",
-    content: "Designed for life on the go. Our products feature easy-clean designs, leak-proof seals, and portable sizes that fit seamlessly into your daily routine."
-  },
-];
-
 const Index = () => {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+  const thriveFactors = [
+    {
+      title: "Premium Materials",
+      content: "Crafted with the finest materials for durability and performance"
+    },
+    {
+      title: "Sustainability",
+      content: "Eco-friendly practices in every step of our production"
+    },
+    {
+      title: "Customization",
+      content: "Personalize your wellness journey with our flexible options"
+    },
+    {
+      title: "Convenience",
+      content: "Everything you need for wellness in one place"
+    },
+  ];
 
   const toggleAccordion = (title: string) => {
     setOpenAccordion(openAccordion === title ? null : title);
@@ -45,13 +45,13 @@ const Index = () => {
             {/* Left: stacked text */}
             <div className="text-left lg:text-left text-center">
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight space-y-2">
-                <div className="hidden lg:block">WE CREATE</div>
-                <div className="hidden lg:block">INNOVATIVE</div>
-                <div className="hidden lg:block">PRODUCTS THAT</div>
-                <div className="hidden lg:block">MAKE WELLNESS</div>
+                <div className="hidden lg:block">We Create</div>
+                <div className="hidden lg:block">Innovative</div>
+                <div className="hidden lg:block">Products That</div>
+                <div className="hidden lg:block">Make Wellness</div>
                 {/* Mobile: Simplified text */}
                 <div className="lg:hidden text-6xl sm:text-7xl mb-4">THRIVE</div>
-                <div className="lg:hidden text-2xl sm:text-3xl text-white/80 font-light">Premium wellness products made simple</div>
+                <div className="lg:hidden text-2xl sm:text-3xl text-white/80 font-light">Premium Wellness Solutions</div>
                 {/* Desktop: FlippingText */}
                 <div className="hidden lg:block"><FlippingText /></div>
               </h2>
@@ -81,10 +81,10 @@ const Index = () => {
             {/* Left: Heading + accordion list */}
             <div>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-3 text-center lg:text-left">
-                THE THRIVE <span className="text-glacier">FACTOR</span>
+                The Thrive <span className="text-glacier">Factor</span>
               </h2>
               <p className="font-display text-xl sm:text-2xl font-extrabold text-white/90 tracking-wide mb-10 text-center lg:text-left">
-                MADE WITH A CONSCIENCE TO THE WORLD
+                Made with Purpose
               </p>
 
               <div className="divide-y divide-white/20 max-w-xl">

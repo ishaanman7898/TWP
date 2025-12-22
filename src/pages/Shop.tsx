@@ -10,6 +10,7 @@ import { Search, ShoppingBag, ArrowUpDown, ShoppingCart, ChevronDown, Minus, Plu
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { HeroTubesCursor } from "@/components/HeroTubesCursor";
 
 
 // Helper function to normalize product properties
@@ -179,14 +180,15 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
 
         {/* Hero Section - Apple Style */}
         <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20">
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-black to-black z-0"></div>
+          <HeroTubesCursor theme="rainbow" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-black/80 to-black z-[1]"></div>
 
           <div className="relative z-10 text-center px-4">
             <h1 className="font-display text-6xl md:text-8xl font-bold mb-6 tracking-tight">
-              Shop Thrive
+              Shop
             </h1>
             <p className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto font-light mb-8">
-              Premium wellness products designed for those who demand more from life.
+              Discover our premium wellness products
             </p>
           </div>
 
@@ -243,8 +245,8 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
                   <SelectContent>
                     <SelectItem value="name-asc">Name (A-Z)</SelectItem>
                     <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                    <SelectItem value="price-asc">Price (Low-High)</SelectItem>
-                    <SelectItem value="price-desc">Price (High-Low)</SelectItem>
+                    <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                    <SelectItem value="price-desc">Price (High to Low)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -265,7 +267,7 @@ export default function Shop({ category: categoryProp }: ShopProps = {}) {
             {/* Empty State */}
             {groupedProducts.length === 0 && (
               <div className="text-center py-16">
-                <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+                <p className="text-muted-foreground text-lg">No products found</p>
                 <Button
                   variant="outline"
                   className="mt-4"

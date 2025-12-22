@@ -36,6 +36,7 @@ import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import Shipping from "./pages/Shipping";
 import Mission from "./pages/Mission";
+import IntroTest from "./pages/IntroTest";
 
 const queryClient = new QueryClient();
 
@@ -47,11 +48,11 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ScrollToTop />
-            <PageLoader />
-            <FloatingCart />
-            <NewsletterPopup />
-            <Routes>
+              <ScrollToTop />
+              <PageLoader />
+              <FloatingCart />
+              <NewsletterPopup />
+              <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/featured" element={<Featured />} />
             <Route path="/shop" element={<Shop />} />
@@ -81,14 +82,15 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/intro-test" element={<IntroTest />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
-  </TooltipProvider>
-</QueryClientProvider>
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
