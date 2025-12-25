@@ -60,15 +60,11 @@ function isActiveProductStatus(status: string | null | undefined) {
 }
 
 // Cache for Supabase products (in-memory, per worker instance)
-// This cache persists across requests within the same worker instance
-// Cloudflare Workers are stateless but instances can handle multiple requests
 let productsCache: any[] | null = null;
 let cacheTimestamp: number | null = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 async function fetchSupabaseProducts(env: any): Promise<any[]> {
-  // Check cache first - this prevents unnecessary Supabase calls
-  // and doesn't count as a "build" - it's runtime caching
   const now = Date.now();
   if (productsCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
     return productsCache;
@@ -85,12 +81,11 @@ async function fetchSupabaseProducts(env: any): Promise<any[]> {
       Authorization: `Bearer ${supabaseAnonKey}`,
     },
   });
-  if (!resp.ok) return productsCache || []; // Return cached data on error
+  if (!resp.ok) return productsCache || [];
   
   const data = (await resp.json()) as any[];
   const products = Array.isArray(data) ? data : [];
   
-  // Update cache - this is in-memory, not a build artifact
   productsCache = products;
   cacheTimestamp = now;
   
@@ -111,7 +106,7 @@ function toProductChunk(p: any, siteUrl: string): RagChunk {
     p.sku ? `SKU: ${p.sku}` : "",
     p.category ? `Category: ${p.category}` : "",
     p.status ? `Status: ${p.status}` : "",
-    p.price != null ? `Price: $${Number(p.price).toFixed(2)}` : "",
+    p.price != null ? `Price: ${Number(p.price).toFixed(2)}` : "",
     p.description ? `Description: ${p.description}` : "",
     specs ? `Specifications: ${specs}` : "",
   ]
@@ -196,104 +191,155 @@ async function embedQuery(env: any, text: string): Promise<number[] | null> {
   return l2Normalize(v);
 }
 
-export const onRequestPost: PagesFunction = async ({ request, env }: PagesFunctionContext) => {
-  const body = (await request.json()) as ChatRequest;
-  const q = normalizeQuery(body.message);
-
-  const index = await loadIndex(env);
-
-  const siteUrl = String(env.PUBLIC_SITE_URL || "http://localhost:8080");
-  const supaAll = await fetchSupabaseProducts(env);
-  const supaActive = supaAll.filter((p) => isActiveProductStatus(p?.status));
-
-  const dynamicChunks: RagChunk[] = [];
-
-  if (supaActive.length > 0) {
-    // Add explicit price summary for questions like "most expensive product".
-    const sortedByPrice = [...supaActive]
-      .filter((p) => typeof p.price === "number")
-      .sort((a, b) => Number(b.price) - Number(a.price));
-    const mostExpensive = sortedByPrice[0];
-    if (mostExpensive) {
-      dynamicChunks.push({
-        title: "Pricing Summary - Most Expensive Product",
-        url: `${siteUrl.replace(/\/$/, "")}/shop`,
-        content: `The most expensive active product is "${mostExpensive.name}" (${mostExpensive.group_name || ""}) at $${Number(mostExpensive.price).toFixed(2)}.`,
-        embedding: [],
-      });
-    }
-
-    // Help with bundle comparisons.
-    const bundles = supaActive.filter((p) => String(p.category || "").toLowerCase() === "bundles");
-    if (bundles.length) {
-      const lines = bundles
-        .slice(0, 20)
-        .map((b) => `- ${b.name} ($${Number(b.price).toFixed(2)})${b.description ? `: ${b.description}` : ""}`)
-        .join("\n");
-      dynamicChunks.push({
-        title: "Bundles - Current Active Bundles",
-        url: `${siteUrl.replace(/\/$/, "")}/shop/bundles`,
-        content: `Active bundles:\n${lines}`,
-        embedding: [],
-      });
-    }
-
-    // Include product-specific chunks (name/price/specs) for accurate Q&A.
-    // Limit to reduce per-request overhead.
-    for (const p of supaActive.slice(0, 80)) {
-      dynamicChunks.push(toProductChunk(p, siteUrl));
-    }
+export const onRequest: PagesFunction = async ({ request, env }: PagesFunctionContext) => {
+  // Handle CORS preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
   }
 
-  const allChunks = [...dynamicChunks, ...index.chunks];
+  // Only handle POST
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  const qEmbed = await embedQuery(env, q);
-  const hasEmbeddings = Boolean(qEmbed) && allChunks.some((c) => Array.isArray(c.embedding) && c.embedding.length > 0);
-
-  const scored = allChunks
-    .map((c) => {
-      const kw = keywordFallbackScore(q, `${c.title}\n${c.content}`);
-      if (hasEmbeddings && qEmbed && Array.isArray(c.embedding) && c.embedding.length > 0) {
-        const sem = cosineSim(qEmbed, c.embedding);
-        return { c, score: sem + kw * 0.05 };
-      }
-      return { c, score: kw };
-    })
-    .sort((a, b) => b.score - a.score);
-
-  const top = scored.slice(0, Number(env.RAG_TOP_K || 7)).map((x) => x.c);
-
-  const context = top
-    .map((c) => `Title: ${c.title}\nURL: ${c.url}\n\n${c.content}`)
-    .join("\n\n---\n\n")
-    .slice(0, Number(env.RAG_MAX_CONTEXT_CHARS || 3500));
-
-  const prompt =
-    "You are Thrive Wellness's helpful AI assistant. " +
-    "Answer the user's question using ONLY the context below. " +
-    "For product prices, use the exact prices from the context. " +
-    "Be concise, friendly, and conversational - give direct answers without repeating the entire context. " +
-    "If asking about the most expensive product, identify it clearly by name and price. " +
-    "If asking about bundle contents, list what's included clearly. " +
-    "If the answer isn't in the context, say you don't know." +
-    "\n\n" +
-    `Context:\n${context}\n\n` +
-    `User question: ${q}\n\n` +
-    "Answer (be direct and natural, don't dump raw context):";
-
-  let responseText = "";
   try {
-    responseText = await callWorkersAI(env, prompt);
-  } catch (e) {
-    responseText = `Based on our website information:\n\n${context}`;
+    const body = (await request.json()) as ChatRequest;
+    const q = normalizeQuery(body.message);
+
+    if (!q) {
+      return new Response(JSON.stringify({ error: "Message is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const index = await loadIndex(env);
+
+    const siteUrl = String(env.PUBLIC_SITE_URL || "http://localhost:8080");
+    const supaAll = await fetchSupabaseProducts(env);
+    const supaActive = supaAll.filter((p) => isActiveProductStatus(p?.status));
+
+    const dynamicChunks: RagChunk[] = [];
+
+    if (supaActive.length > 0) {
+      const sortedByPrice = [...supaActive]
+        .filter((p) => typeof p.price === "number")
+        .sort((a, b) => Number(b.price) - Number(a.price));
+      const mostExpensive = sortedByPrice[0];
+      if (mostExpensive) {
+        dynamicChunks.push({
+          title: "Pricing Summary - Most Expensive Product",
+          url: `${siteUrl.replace(/\/$/, "")}/shop`,
+          content: `The most expensive active product is "${mostExpensive.name}" (${mostExpensive.group_name || ""}) at $${Number(mostExpensive.price).toFixed(2)}.`,
+          embedding: [],
+        });
+      }
+
+      const bundles = supaActive.filter((p) => String(p.category || "").toLowerCase() === "bundles");
+      if (bundles.length) {
+        const lines = bundles
+          .slice(0, 20)
+          .map((b) => `- ${b.name} ($${Number(b.price).toFixed(2)})${b.description ? `: ${b.description}` : ""}`)
+          .join("\n");
+        dynamicChunks.push({
+          title: "Bundles - Current Active Bundles",
+          url: `${siteUrl.replace(/\/$/, "")}/shop/bundles`,
+          content: `Active bundles:\n${lines}`,
+          embedding: [],
+        });
+      }
+
+      for (const p of supaActive.slice(0, 80)) {
+        dynamicChunks.push(toProductChunk(p, siteUrl));
+      }
+    }
+
+    const allChunks = [...dynamicChunks, ...index.chunks];
+
+    const qEmbed = await embedQuery(env, q);
+    const hasEmbeddings = Boolean(qEmbed) && allChunks.some((c) => Array.isArray(c.embedding) && c.embedding.length > 0);
+
+    const scored = allChunks
+      .map((c) => {
+        const kw = keywordFallbackScore(q, `${c.title}\n${c.content}`);
+        if (hasEmbeddings && qEmbed && Array.isArray(c.embedding) && c.embedding.length > 0) {
+          const sem = cosineSim(qEmbed, c.embedding);
+          return { c, score: sem + kw * 0.05 };
+        }
+        return { c, score: kw };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    const top = scored.slice(0, Number(env.RAG_TOP_K || 7)).map((x) => x.c);
+
+    const context = top
+      .map((c) => `Title: ${c.title}\nURL: ${c.url}\n\n${c.content}`)
+      .join("\n\n---\n\n")
+      .slice(0, Number(env.RAG_MAX_CONTEXT_CHARS || 3500));
+
+    if (!context.trim()) {
+      return new Response(
+        JSON.stringify({
+          response: "I couldn't find relevant information about that. Try asking about our products, team, shipping, or contact info!",
+          sources: [],
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+    }
+
+    const prompt =
+      "You are Thrive Wellness's helpful AI assistant. " +
+      "Answer the user's question using ONLY the context below. " +
+      "For product prices, use the exact prices from the context. " +
+      "Be concise, friendly, and conversational - give direct answers without repeating the entire context. " +
+      "If asking about the most expensive product, identify it clearly by name and price. " +
+      "If asking about bundle contents, list what's included clearly. " +
+      "If the answer isn't in the context, say you don't know.\n\n" +
+      `Context:\n${context}\n\n` +
+      `User question: ${q}\n\n` +
+      "Answer (be direct and natural, don't dump raw context):";
+
+    let responseText = "";
+    try {
+      responseText = await callWorkersAI(env, prompt);
+    } catch (e) {
+      console.error("AI error:", e);
+      responseText = `Based on our website information:\n\n${context}`;
+    }
+
+    const sources = top.slice(0, 3).map((c) => ({ content: c.content.slice(0, 200), url: c.url }));
+
+    return new Response(JSON.stringify({ response: responseText, sources }), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  } catch (error: any) {
+    console.error("Chat error:", error);
+    return new Response(
+      JSON.stringify({ error: error?.message || "Internal server error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    );
   }
-
-  const sources = top.slice(0, 3).map((c) => ({ content: c.content.slice(0, 200), url: c.url }));
-
-  return new Response(JSON.stringify({ response: responseText, sources }), {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
 };
