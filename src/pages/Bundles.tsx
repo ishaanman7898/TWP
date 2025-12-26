@@ -10,8 +10,10 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { ProductLineSection } from "@/components/ProductLineSection";
 import { HeroTubesCursor } from "@/components/HeroTubesCursor";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function BundlesPage() {
+    usePageTitle("Bundles");
     const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);

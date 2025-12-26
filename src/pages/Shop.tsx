@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { HeroTubesCursor } from "@/components/HeroTubesCursor";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 
 // Helper function to normalize product properties
@@ -63,6 +64,7 @@ interface ShopProps {
 }
 
 export default function Shop({ category: categoryProp }: ShopProps = {}) {
+  usePageTitle("Shop");
   const [supabaseProducts, setSupabaseProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>(['All']);
   const [isLoading, setIsLoading] = useState(true);

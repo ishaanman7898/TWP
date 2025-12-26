@@ -6,8 +6,10 @@ import WaveMarquee from "@/components/WaveMarquee";
 import { ChevronDown } from "lucide-react";
 import { HeroProductSlideshow } from "@/components/HeroProductSlideshow";
 import { FlippingText } from "@/components/FlippingText";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const Index = () => {
+  usePageTitle("Wellness That Works");
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
   const thriveFactors = [

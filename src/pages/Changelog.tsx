@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Sparkles, Wrench, Rocket, Bug, Zap } from "lucide-react";
 import { changelogData } from "@/data/changelog";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const typeConfig: { [key: string]: { color: string; icon: any; bg: string } } = {
     "Major Update": { color: "text-purple-400", icon: Rocket, bg: "bg-purple-500/10 border-purple-500/20" },
@@ -21,6 +22,7 @@ const typeConfig: { [key: string]: { color: string; icon: any; bg: string } } = 
 };
 
 export default function Changelog() {
+    usePageTitle("Changelog");
     const changes = changelogData;
 
     return (

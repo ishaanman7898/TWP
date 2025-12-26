@@ -1,0 +1,17 @@
+{
+  "build": {
+    "command": "npm run build",
+    "cwd": "/",
+    "watch_paths": [
+      "src/**",
+      "public/**",
+      "training-docs/**",
+      "scripts/**",
+      "functions/**"
+    ]
+  },
+  "deployment": {
+    "compatibility_date": "2025-12-20",
+    "compatibility_flags": []
+  }
+}

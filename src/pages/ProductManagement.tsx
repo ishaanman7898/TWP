@@ -13,10 +13,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Trash2, Edit, Plus, Image as ImageIcon, LayoutGrid, List, Search, X, ArrowUpDown, MoveUp, MoveDown } from 'lucide-react'
+import { Trash2, Edit, Plus, Image as ImageIcon, LayoutGrid, List, Search, X, ArrowUpDown, MoveUp, MoveDown, Sparkles, Wrench, Rocket, Bug, Zap } from 'lucide-react'
+import { changelogData } from '@/data/changelog'
 
 const ProductManagement = () => {
-  const [activeTab, setActiveTab] = useState<'products' | 'inventory'>('products')
+  const [activeTab, setActiveTab] = useState<'products' | 'inventory' | 'changelog'>('products')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
@@ -129,6 +130,17 @@ const ProductManagement = () => {
       return data as Product[]
     }
   })
+
+  // Create a map of SKU to stock_left for quick lookup
+  const inventoryMap = useMemo(() => {
+    const map: Record<string, number> = {}
+    inventory.forEach((item: any) => {
+      if (item.sku) {
+        map[item.sku] = item.stock_left || 0
+      }
+    })
+    return map
+  }, [inventory])
 
   // Realtime subscription for products
   React.useEffect(() => {
@@ -892,8 +904,21 @@ const ProductManagement = () => {
         >
           Inventory Table
         </button>
+        <button
+          onClick={() => setActiveTab('changelog')}
+          className={`px-4 py-3 font-medium transition-colors border-b-2 ${
+            activeTab === 'changelog'
+              ? 'border-glacier text-glacier'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Changelog
+        </button>
       </div>
 
+      {activeTab === 'changelog' ? (
+        <ChangelogContent />
+      ) : (
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <div className="relative w-full sm:w-[320px]">
@@ -963,7 +988,7 @@ const ProductManagement = () => {
             <div className="grid gap-4">
               {inventory.map((item: any) => (
                 <Card key={item.id} className="p-3 sm:p-4">
-                  <div className="flex items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center justify-between gap-2 sm:gap-4 flex-wrap">
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm sm:text-lg truncate">{item.item_name || 'N/A'}</p>
                       <p className="text-xs sm:text-sm text-muted-foreground truncate">SKU: {item.sku || 'N/A'}</p>
@@ -980,6 +1005,58 @@ const ProductManagement = () => {
                     }>
                       {item.stock_left < 0 ? 'Backordered' : item.stock_left > 10 ? 'In Stock' : item.stock_left > 0 ? 'Low Stock' : 'Out of Stock'}
                     </Badge>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          const amount = prompt('Enter amount to subtract:', '1')
+                          if (amount && !isNaN(Number(amount))) {
+                            const newStockLeft = (item.stock_left || 0) - Number(amount)
+                            try {
+                              const { error } = await supabase
+                                .from('inventory')
+                                .update({ stock_left: newStockLeft })
+                                .eq('id', item.id)
+                              
+                              if (error) throw error
+                              toast.success(`Subtracted ${amount} from inventory`)
+                              queryClient.invalidateQueries({ queryKey: ['inventory'] })
+                            } catch (error) {
+                              toast.error(`Error updating inventory: ${(error as Error).message}`)
+                            }
+                          }
+                        }}
+                      >
+                        - Subtract
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          const amount = prompt('Enter amount to add:', '1')
+                          if (amount && !isNaN(Number(amount))) {
+                            const newStockLeft = (item.stock_left || 0) + Number(amount)
+                            try {
+                              const { error } = await supabase
+                                .from('inventory')
+                                .update({ stock_left: newStockLeft })
+                                .eq('id', item.id)
+                              
+                              if (error) throw error
+                              toast.success(`Added ${amount} to inventory`)
+                              queryClient.invalidateQueries({ queryKey: ['inventory'] })
+                            } catch (error) {
+                              toast.error(`Error updating inventory: ${(error as Error).message}`)
+                            }
+                          }
+                        }}
+                      >
+                        + Add
+                      </Button>
+                    </div>
                   </div>
 
                 </Card>
@@ -1063,6 +1140,18 @@ const ProductManagement = () => {
                   <div className="min-w-0">
                     <h3 className="font-semibold text-sm sm:text-lg mb-1 truncate">{product.name}</h3>
                     <p className="text-xs text-muted-foreground truncate">SKU: {product.sku}</p>
+                    {inventoryMap[product.sku] !== undefined && (
+                      <p className="text-xs font-medium mt-1">
+                        Stock: <span className={
+                          inventoryMap[product.sku] < 0 ? 'text-red-500' :
+                          inventoryMap[product.sku] === 0 ? 'text-red-500' :
+                          inventoryMap[product.sku] <= 10 ? 'text-orange-500' :
+                          'text-green-500'
+                        }>
+                          {inventoryMap[product.sku]} units
+                        </span>
+                      </p>
+                    )}
                   </div>
                   <span className="text-sm sm:text-lg font-bold text-glacier flex-shrink-0">${product.price.toFixed(2)}</span>
                 </div>
@@ -1172,6 +1261,18 @@ const ProductManagement = () => {
                           <div className="min-w-0">
                             <h3 className="font-semibold text-sm sm:text-base truncate">{product.name}</h3>
                             <p className="text-xs sm:text-sm text-muted-foreground truncate">SKU: {product.sku}</p>
+                            {inventoryMap[product.sku] !== undefined && (
+                              <p className="text-xs font-medium mt-1">
+                                Stock: <span className={
+                                  inventoryMap[product.sku] < 0 ? 'text-red-500' :
+                                  inventoryMap[product.sku] === 0 ? 'text-red-500' :
+                                  inventoryMap[product.sku] <= 10 ? 'text-orange-500' :
+                                  'text-green-500'
+                                }>
+                                  {inventoryMap[product.sku]} units
+                                </span>
+                              </p>
+                            )}
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                               <Badge variant="secondary" className="text-xs">{product.category}</Badge>
                               <Badge
@@ -1257,11 +1358,86 @@ const ProductManagement = () => {
           ))}
         </div>
       )}
+      )}
       </div>
 
       <Footer />
     </div>
   )
 }
+
+// Changelog Content Component
+const ChangelogContent = () => {
+  const changes = changelogData;
+  
+  const typeConfig: { [key: string]: { color: string; icon: any; bg: string } } = {
+    "Major Update": { color: "text-purple-400", icon: Rocket, bg: "bg-purple-500/10 border-purple-500/20" },
+    "Major Updates": { color: "text-purple-400", icon: Rocket, bg: "bg-purple-500/10 border-purple-500/20" },
+    "Infrastructure Migration": { color: "text-indigo-400", icon: Zap, bg: "bg-indigo-500/10 border-indigo-500/20" },
+    "UI/UX Improvements": { color: "text-blue-400", icon: Sparkles, bg: "bg-blue-500/10 border-blue-500/20" },
+    "Team Page & Infrastructure": { color: "text-emerald-400", icon: Zap, bg: "bg-emerald-500/10 border-emerald-500/20" },
+    "Minor Updates": { color: "text-cyan-400", icon: Wrench, bg: "bg-cyan-500/10 border-cyan-500/20" },
+    "Minor Fixes": { color: "text-amber-400", icon: Bug, bg: "bg-amber-500/10 border-amber-500/20" },
+    "Bug fixes and patches": { color: "text-amber-400", icon: Bug, bg: "bg-amber-500/10 border-amber-500/20" },
+    "Stable Release": { color: "text-green-400", icon: Sparkles, bg: "bg-green-500/10 border-green-500/20" },
+    "Dev Push": { color: "text-orange-400", icon: Rocket, bg: "bg-orange-500/10 border-orange-500/20" },
+    "Initial Launch": { color: "text-pink-400", icon: Rocket, bg: "bg-pink-500/10 border-pink-500/20" },
+    "Supabase Tweaks and General Product Management Updates": { color: "text-indigo-400", icon: Wrench, bg: "bg-indigo-500/10 border-indigo-500/20" },
+    "Updates": { color: "text-sky-400", icon: Wrench, bg: "bg-sky-500/10 border-sky-500/20" },
+    "Mobile Optimization & UI Improvements": { color: "text-blue-400", icon: Sparkles, bg: "bg-blue-500/10 border-blue-500/20" },
+    "Mobile Optimization & Infrastructure": { color: "text-blue-400", icon: Zap, bg: "bg-blue-500/10 border-blue-500/20" },
+    "Mobile UX & Checkout Improvements": { color: "text-blue-400", icon: Sparkles, bg: "bg-blue-500/10 border-blue-500/20" },
+    "Bug Fixes & Cleanup": { color: "text-amber-400", icon: Bug, bg: "bg-amber-500/10 border-amber-500/20" },
+    "Minor Tweaks & Patches": { color: "text-cyan-400", icon: Wrench, bg: "bg-cyan-500/10 border-cyan-500/20" },
+  };
+
+  return (
+    <div className="space-y-12 max-w-4xl">
+      <div>
+        <h2 className="font-display text-3xl font-bold mb-2">Changelog</h2>
+        <p className="text-muted-foreground mb-8">
+          Track our latest updates, improvements, and releases.
+        </p>
+      </div>
+
+      <div className="space-y-12">
+        {changes.map((change, index) => {
+          const config = typeConfig[change.type] || { color: "text-gray-400", icon: Wrench, bg: "bg-gray-500/10 border-gray-500/20" };
+          const Icon = config.icon;
+          const isLatest = index === 0;
+          
+          return (
+            <div key={change.version} className={`relative pl-8 border-l-2 ${isLatest ? 'border-primary' : 'border-border/50'}`}>
+              <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full ${isLatest ? 'bg-primary' : 'bg-muted'} flex items-center justify-center`}>
+                {isLatest && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <h3 className={`text-2xl font-bold font-display ${isLatest ? 'text-primary' : ''}`}>v{change.version}</h3>
+                <Badge variant="outline" className={`text-xs ${config.bg} ${config.color} border`}>
+                  <Icon className="w-3 h-3 mr-1" />
+                  {change.type}
+                </Badge>
+                {isLatest && <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">Latest</Badge>}
+                <span className="text-sm text-muted-foreground ml-auto">
+                  {change.date}
+                </span>
+              </div>
+
+              <ul className="space-y-2">
+                {change.items.map((item, i) => (
+                  <li key={i} className="text-muted-foreground flex items-start gap-3">
+                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 export default ProductManagement

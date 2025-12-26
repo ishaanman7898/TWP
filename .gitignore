@@ -32,3 +32,8 @@ dist-ssr
 
 # Development testing overrides (never commit)
 .env.development
+
+# Training documents (keep folder structure but ignore user content)
+training-docs/*
+!training-docs/README.md
+!training-docs/example.txt

@@ -94,7 +94,8 @@ async function loadIndex(env: Env): Promise<RagIndex> {
 async function callWorkersAI(env: Env, prompt: string): Promise<string> {
   const accountId = env.CF_ACCOUNT_ID;
   const apiToken = env.CF_API_TOKEN;
-  const model = env.CF_AI_MODEL || "@cf/meta/llama-3.1-8b-instruct";
+  // Use faster model: llama-3.2-1b-instruct (1B params, much faster than 8B)
+  const model = env.CF_AI_MODEL || "@cf/meta/llama-3.2-1b-instruct";
 
   if (!accountId || !apiToken) {
     throw new Error("Missing Cloudflare AI credentials");
@@ -107,7 +108,10 @@ async function callWorkersAI(env: Env, prompt: string): Promise<string> {
       Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ 
+      prompt,
+      max_tokens: 256  // Limit response length for faster generation
+    }),
   });
 
   if (!resp.ok) {

@@ -16,6 +16,7 @@ export function ChatbotWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState("");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -23,6 +24,21 @@ export function ChatbotWidget() {
     },
   ]);
   const [showQuickReplies, setShowQuickReplies] = useState(true);
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Hide chatbot on mobile
+  if (isMobile) {
+    return null;
+  }
 
   const quickReplies = [
     "What's your most expensive product?",
@@ -57,7 +73,7 @@ export function ChatbotWidget() {
     return "bottom-6 right-6";
   }, [isProductPage, isCompanyOrSupportPage, isLandingPage]);
 
-  // Scroll detection - show on scroll down, keep visible on scroll up
+  // Scroll detection - show after video on landing page
   useEffect(() => {
     // Company/Support pages: always visible
     if (isCompanyOrSupportPage) {
@@ -72,12 +88,11 @@ export function ChatbotWidget() {
           const currentScrollY = window.scrollY;
           const viewportHeight = window.innerHeight;
           
-          // Show chatbot when scrolled past threshold
           if (isLandingPage) {
-            // Landing page: show after scrolling past 80% of viewport
+            // Landing page: show when scrolled past video (80% viewport), hide when scrolling back up to video
             setIsVisible(currentScrollY > viewportHeight * 0.8);
           } else {
-            // Other pages: show after scrolling 100px
+            // Other pages: show after scrolling 100px, stay visible
             setIsVisible(currentScrollY > 100);
           }
           

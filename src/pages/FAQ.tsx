@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const faqs = [
   {
@@ -36,6 +37,7 @@ const faqs = [
 ];
 
 export default function FAQ() {
+  usePageTitle("FAQ");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (

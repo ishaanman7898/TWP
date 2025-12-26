@@ -28,7 +28,6 @@ import Supplements from "./pages/Supplements";
 
 import Bundles from "./pages/Bundles";
 import Cart from "./pages/Cart";
-import Changelog from "./pages/Changelog";
 import CheckoutLoading from "./pages/CheckoutLoading";
 import CheckoutManual from "./pages/CheckoutManual";
 import CheckoutProcessing from "./pages/CheckoutProcessing";
@@ -63,7 +62,6 @@ const App = () => (
             <Route path="/shop/bundles" element={<Bundles />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/changelog" element={<Changelog />} />
             <Route path="/checkout-loading" element={<CheckoutLoading />} />
             <Route path="/checkout-manual" element={<CheckoutManual />} />
             <Route path="/checkout-processing" element={<CheckoutProcessing />} />

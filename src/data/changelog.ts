@@ -1,5 +1,21 @@
 export const changelogData = [
   {
+    version: "3.0.0",
+    date: "December 26, 2025",
+    type: "Major Update",
+    items: [
+      "Added dynamic page titles - all pages now show 'Thrive | [Page Name]' in browser tab.",
+      "Removed chatbot from mobile devices (< 768px width) for better mobile performance.",
+      "Made cart items clickable - clicking product image or name navigates to product detail page.",
+      "Added inventory management to Product Management page - add/subtract stock directly from inventory table.",
+      "Integrated inventory display in Products table - shows stock levels with color-coded indicators (green: 11+, orange: 1-10, red: 0 or negative).",
+      "Stock information syncs between Products and Inventory tables via SKU matching.",
+      "Inventory updates work in realtime with Supabase subscriptions.",
+      "Improved cart UX with hover effects on clickable product elements.",
+      "Added usePageTitle custom hook for consistent title management across all pages."
+    ]
+  },
+  {
     version: "2.5.0",
     date: "December 23, 2025",
     type: "Mobile Optimization & UI Improvements",

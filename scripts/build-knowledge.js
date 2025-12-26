@@ -1,6 +1,7 @@
 /**
  * Build comprehensive knowledge base from all website content
  * JavaScript version - no Python needed!
+ * Automatically includes documents from training-docs folder
  */
 import fs from 'fs';
 import path from 'path';
@@ -9,10 +10,65 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read training documents from folder
+function loadTrainingDocs() {
+  const trainingDocsPath = path.join(__dirname, '../training-docs');
+  const docs = [];
+  
+  if (!fs.existsSync(trainingDocsPath)) {
+    console.log('⚠️  No training-docs folder found, skipping...');
+    return docs;
+  }
+  
+  const files = fs.readdirSync(trainingDocsPath);
+  const supportedExtensions = ['.txt', '.md', '.json'];
+  
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    if (!supportedExtensions.includes(ext)) continue;
+    
+    const filePath = path.join(trainingDocsPath, file);
+    const stats = fs.statSync(filePath);
+    
+    if (!stats.isFile()) continue;
+    
+    try {
+      let content = fs.readFileSync(filePath, 'utf-8');
+      
+      // For JSON files, stringify nicely
+      if (ext === '.json') {
+        const jsonData = JSON.parse(content);
+        content = JSON.stringify(jsonData, null, 2);
+      }
+      
+      docs.push({
+        title: `Training Document: ${file}`,
+        content: content
+      });
+      
+      console.log(`   ✓ Loaded: ${file} (${(stats.size / 1024).toFixed(1)}KB)`);
+    } catch (err) {
+      console.log(`   ✗ Failed to load ${file}: ${err.message}`);
+    }
+  }
+  
+  return docs;
+}
+
 function buildKnowledgeBase() {
   console.log('🚀 Building comprehensive knowledge base...\n');
   
   const knowledge = [];
+  
+  // Load training documents first
+  console.log('📄 Loading training documents...');
+  const trainingDocs = loadTrainingDocs();
+  if (trainingDocs.length > 0) {
+    knowledge.push(...trainingDocs);
+    console.log(`   Added ${trainingDocs.length} training documents\n`);
+  } else {
+    console.log('   No training documents found\n');
+  }
   
   // ============================================
   // COMPANY INFORMATION

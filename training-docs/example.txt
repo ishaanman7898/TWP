@@ -1,0 +1,14 @@
+This is an example training document.
+
+You can add any information here that you want the chatbot to know about.
+
+For example:
+- Company policies
+- Product specifications
+- Internal procedures
+- FAQ answers
+- Any other information
+
+The chatbot will automatically learn from this content when you run npm run dev or npm run build.
+
+Delete this file and add your own documents!

@@ -8,8 +8,10 @@ import { Trash2, ShoppingBag, Truck, Zap } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function Cart() {
+  usePageTitle("Cart");
   const { cart, removeFromCart, updateQuantity, totalPrice, totalItems, addToCart } = useCart();
   const navigate = useNavigate();
   const [shippingMethod, setShippingMethod] = useState<'standard' | 'express'>('standard');
@@ -80,24 +82,34 @@ export default function Cart() {
                   const qty = item.quantity || 1;
                   const unit = item.price || 0;
                   const line = unit * qty;
+                  
+                  // Generate product URL from item name
+                  const productSlug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                  const productUrl = `/product/${productSlug}`;
+                  
                   return (
                     <div
                       key={index}
                       className="glass rounded-xl p-4 md:p-6 flex flex-col sm:flex-row gap-4"
                     >
-                      {/* Product Image with better sizing */}
-                      <div className="w-full sm:w-32 h-32 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {/* Product Image with better sizing - clickable */}
+                      <Link 
+                        to={productUrl}
+                        className="w-full sm:w-32 h-32 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden hover:bg-white/20 transition-colors cursor-pointer"
+                      >
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-full h-full object-contain p-2" />
                         ) : (
                           <ShoppingBag className="w-8 h-8 text-muted-foreground" />
                         )}
-                      </div>
+                      </Link>
 
                       {/* Product Details */}
                       <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                         <div className="min-w-0">
-                          <h3 className="font-semibold text-lg truncate">{item.name}{qty > 1 ? ` × ${qty}` : ''}</h3>
+                          <Link to={productUrl} className="hover:text-glacier transition-colors">
+                            <h3 className="font-semibold text-lg truncate">{item.name}{qty > 1 ? ` × ${qty}` : ''}</h3>
+                          </Link>
                           <p className="text-muted-foreground text-sm">Unit: ${unit.toFixed(2)}</p>
                         </div>
 

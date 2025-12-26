@@ -117,7 +117,8 @@ function formatProduct(product, siteUrl) {
 async function callCloudflareAI(prompt) {
   const accountId = process.env.CF_ACCOUNT_ID;
   const apiToken = process.env.CF_API_TOKEN;
-  const model = process.env.CF_AI_MODEL || '@cf/meta/llama-3.1-8b-instruct';
+  // Use faster model: llama-3.2-1b-instruct (1B params, much faster than 8B)
+  const model = process.env.CF_AI_MODEL || '@cf/meta/llama-3.2-1b-instruct';
   
   if (!accountId || !apiToken) {
     throw new Error('Cloudflare AI not configured');
@@ -130,7 +131,10 @@ async function callCloudflareAI(prompt) {
       'Authorization': `Bearer ${apiToken}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ 
+      prompt,
+      max_tokens: 256  // Limit response length for faster generation
+    })
   });
   
   if (!response.ok) {
