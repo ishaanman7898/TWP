@@ -190,7 +190,7 @@ export function Footer() {
               This store is a project based on the framework for Virtual Enterprises International and does not offer real products.
             </p>
             <p className="text-xs text-muted-foreground/60 mt-2">
-              <Link to="/changelog" className="text-xs text-muted-foreground/60 hover:text-muted-foreground underline">
+              <Link to="/login" className="text-xs text-muted-foreground/60 hover:text-muted-foreground hover:underline transition-colors">
                 v{latestVersion.version} - {latestVersion.type}
               </Link>
             </p>

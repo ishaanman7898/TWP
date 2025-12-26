@@ -919,6 +919,7 @@ const ProductManagement = () => {
       {activeTab === 'changelog' ? (
         <ChangelogContent />
       ) : (
+        <>
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <div className="relative w-full sm:w-[320px]">
@@ -1358,6 +1359,7 @@ const ProductManagement = () => {
           ))}
         </div>
       )}
+        </>
       )}
       </div>
 
